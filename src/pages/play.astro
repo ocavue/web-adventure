@@ -1,0 +1,22 @@
+---
+import '../islands/play/server-styles.ts'
+
+import { Loader } from '../islands/play/Loader.tsx'
+import type { TrailLevels } from '../islands/play/navigation.ts'
+import { PlayApp } from '../islands/play/PlayApp.tsx'
+import Base from '../layouts/Base.astro'
+import { trailSummaries } from '../lib/bank.server.ts'
+
+const levels = Object.fromEntries(trailSummaries().map((t) => [t.mod, t.levels])) as TrailLevels
+---
+
+<Base
+  title="Lesson"
+  description="A Byte Trail lesson: short questions about web development."
+  topbar={false}
+  noindex
+>
+  <PlayApp client:only="preact" levels={levels}>
+    <Fragment slot="fallback"><Loader /></Fragment>
+  </PlayApp>
+</Base>

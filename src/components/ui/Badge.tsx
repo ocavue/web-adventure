@@ -4,7 +4,8 @@ import type { Badge as BadgeInfo, BadgeColor } from '../../lib/constants.ts'
 import { layout } from '../../styles/shared.ts'
 import { colors } from '../../styles/tokens.stylex.ts'
 
-const BADGE_COLORS: Record<BadgeColor, string> = {
+/** The design token of each badge color name. */
+export const BADGE_COLORS: Record<BadgeColor, string> = {
   html: colors.html,
   css: colors.css,
   js: colors.js,
