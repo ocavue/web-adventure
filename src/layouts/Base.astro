@@ -3,6 +3,7 @@ import '../styles/global.css'
 
 import * as stylex from '@stylexjs/stylex'
 
+import { AppShell } from '../islands/shell/AppShell.tsx'
 import { STORE_KEY } from '../lib/store.ts'
 import { THEME_CLASSES } from '../lib/theme.ts'
 import type { ModuleId } from '../lib/types.ts'
@@ -19,9 +20,11 @@ interface Props {
   noindex?: boolean
   /** Structured data for search engines. */
   jsonLd?: Record<string, unknown>
+  /** Renders the app shell: top bar, settings, onboarding, and toasts. The lesson page turns it off. */
+  topbar?: boolean
 }
 
-const { title, description, mod, noindex = false, jsonLd } = Astro.props
+const { title, description, mod, noindex = false, jsonLd, topbar = true } = Astro.props
 const fullTitle = title === 'Byte Trail' ? title : `${title} · Byte Trail`
 const canonical = new URL(Astro.url.pathname, Astro.site)
 const ogImage = new URL('/og.png', Astro.site)
@@ -64,6 +67,7 @@ const ogImage = new URL('/og.png', Astro.site)
   </head>
   <body {...stylex.attrs(styles.body, mod && moduleThemes[mod])}>
     <div {...stylex.attrs(styles.contours)} aria-hidden="true"></div>
+    {topbar && <AppShell client:load />}
     <slot />
   </body>
 </html>
