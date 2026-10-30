@@ -209,7 +209,7 @@ test.describe('quitting a lesson', () => {
 
 // Hydration race bug (fixed separately): an island that hydrates after another one loaded the
 // progress keeps the server-rendered attributes, such as this tooltip.
-test.fixme('the top bar attributes match the stored progress', async ({ page }) => {
+test('the top bar attributes match the stored progress', async ({ page }) => {
   await seedProgress(page, player({ xp: 103 }))
   for (const path of ['/', '/trail/html/', '/profile/']) {
     await page.goto(path)

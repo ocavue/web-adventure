@@ -24,7 +24,6 @@ async function expectNoHorizontalScroll(page: Page): Promise<void> {
 
 for (const screen of SCREENS) {
   test(`${screen.name} fits a 375px screen`, async ({ page }) => {
-    test.fixme(!!screen.fixme, screen.fixme)
     await screen.open(page, 'light')
     await expectNoHorizontalScroll(page)
   })

@@ -40,8 +40,6 @@ function returning(theme: Theme): Seed {
 
 export interface Screen {
   name: string
-  /** Why the screen's tests are skipped for now. */
-  fixme?: string
   /** Opens the screen and waits until it is ready. */
   open: (page: Page, theme: Theme) => Promise<void>
 }
@@ -65,7 +63,6 @@ export const SCREENS: Screen[] = [
   },
   {
     name: 'trail page',
-    fixme: 'Hydration race bug (fixed separately): the island keeps server attributes.',
     open: async (page, theme) => {
       await seedProgress(page, returning(theme))
       await page.goto('/trail/css')
@@ -107,7 +104,6 @@ export const SCREENS: Screen[] = [
   },
   {
     name: 'certificate',
-    fixme: 'Hydration race bug (fixed separately): the island keeps server attributes.',
     open: async (page, theme) => {
       await seedProgress(page, returning(theme))
       await page.goto('/cert/html')

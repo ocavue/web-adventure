@@ -12,7 +12,6 @@ const THEMES: Theme[] = ['light', 'dark']
 for (const screen of SCREENS) {
   for (const theme of THEMES) {
     test(`${screen.name} has no WCAG 2.1 AA violations (${theme})`, async ({ page }) => {
-      test.fixme(!!screen.fixme, screen.fixme)
       await screen.open(page, theme)
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme)
       const results = await new AxeBuilder({ page })

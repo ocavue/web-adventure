@@ -42,9 +42,6 @@ export function trackErrors(context: BrowserContext, allowed: RegExp[] = []): st
       errors.push(`console: ${text} (${msg.location().url})`)
   })
   context.on('weberror', (e) => {
-    // A known bug, fixed separately: Chrome skips the cross-document view transition with this
-    // error. Remove this filter once the fix lands.
-    if (e.error().message.includes('ViewTransition opt-in disabled')) return
     errors.push(`pageerror: ${e.error().message} (${e.page()?.url()})`)
   })
   return errors
