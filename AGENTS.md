@@ -37,7 +37,8 @@ src/
 - Anything that depends on the player's progress is an island. Islands render on the server with a fresh progress state, then `useProgressState()` (`src/lib/hooks.ts`) loads the stored state after hydration. Never read `localStorage` during render.
 - Pass build-time data (level titles, question counts) to islands as props. Islands load full question banks with `loadBank()` from `src/lib/bank.ts` only when they need questions.
 - Navigation is plain links between pages (`<a href>`). There is no client router.
-- Lessons run at `/play?mode=lesson&mod=js&level=1&lesson=0`. Other modes: `jump` (`mod`, `level`), `practice` (`mod`, `level`), `daily`, `review`.
+- Every internal link ends with a slash (`trailingSlash: 'always'`). Build links with `src/lib/routes.ts` and `playHref()`; never write a path by hand.
+- Lessons run at `/play/?mode=lesson&mod=js&level=1&lesson=0`. Other modes: `jump` (`mod`, `level`), `practice` (`mod`, `level`), `daily`, `review`.
 
 ### StyleX
 
