@@ -36,7 +36,12 @@ test('a jump test opens level 2', async ({ page }) => {
   await answerAndContinue(page, false)
   await answerCorrectly(page, 8)
   await expect(resultsTitle(page)).toHaveText('Level 2 unlocked!')
-  await expect(page.getByText('8 of 10 correct.')).toBeVisible()
+  // Exact text: the screen-reader announcement repeats the line after the title.
+  await expect(
+    page.getByText('8 of 10 correct. You clearly know your stuff. Welcome to Pine Camp.', {
+      exact: true,
+    }),
+  ).toBeVisible()
 
   await page.getByRole('link', { name: 'Back to trail' }).click()
   await expect(page).toHaveURL(/\/trail\/html\/?$/)
