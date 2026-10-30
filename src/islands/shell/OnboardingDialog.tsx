@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button.tsx'
 import { Dialog, DialogActions } from '../../components/ui/Dialog.tsx'
 import { SegmentedControl } from '../../components/ui/SegmentedControl.tsx'
 import { MODULES } from '../../lib/constants.ts'
+import { playHref } from '../../lib/selection.ts'
 import { progress, progressReady, updateProgress } from '../../lib/store.ts'
 import type { ModuleId } from '../../lib/types.ts'
 import { focus, text } from '../../styles/shared.ts'
@@ -140,7 +141,7 @@ function OnboardingForm({ titleId }: { titleId: string }) {
           icon="play"
           onClick={() => {
             finish(nameRef.current?.value ?? '', goal)
-            location.assign(`/play?mode=lesson&mod=${first}&level=1&lesson=0`)
+            location.assign(playHref({ mode: 'lesson', mod: first, level: 1, lesson: 0 }))
           }}
         >
           Start my first lesson
