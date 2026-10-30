@@ -1,0 +1,34 @@
+---
+import * as stylex from '@stylexjs/stylex'
+import type { GetStaticPaths } from 'astro'
+
+import { Certificate } from '../../islands/cert/Certificate.tsx'
+import Base from '../../layouts/Base.astro'
+import { trailSummaries } from '../../lib/bank.server.ts'
+import { MOD } from '../../lib/constants.ts'
+import { layout } from '../../styles/shared.ts'
+
+import { styles } from './_cert.styles.ts'
+
+export const getStaticPaths = (() => {
+  return trailSummaries().map((t) => ({
+    params: { mod: t.mod },
+    props: { mod: t.mod, questionCount: t.questionCount },
+  }))
+}) satisfies GetStaticPaths
+
+const { mod, questionCount } = Astro.props
+const name = MOD[mod].name
+---
+
+<Base
+  title={`${name} certificate`}
+  description={`Your certificate of completion for the ${name} trail on Byte Trail.`}
+  mod={mod}
+  noindex
+>
+  <main {...stylex.attrs(layout.wrap, styles.main)}>
+    <h1 {...stylex.attrs(layout.srOnly)}>{name} certificate</h1>
+    <Certificate client:load mod={mod} questionCount={questionCount} />
+  </main>
+</Base>

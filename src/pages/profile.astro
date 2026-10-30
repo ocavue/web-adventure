@@ -1,0 +1,17 @@
+---
+import * as stylex from '@stylexjs/stylex'
+
+import { Profile } from '../islands/profile/Profile.tsx'
+import Base from '../layouts/Base.astro'
+import { layout } from '../styles/shared.ts'
+---
+
+<Base
+  title="Your progress"
+  description="Your XP, streak, trail progress, badges, and certificates on Byte Trail."
+  noindex
+>
+  <main {...stylex.attrs(layout.wrap)}>
+    <Profile client:load />
+  </main>
+</Base>
