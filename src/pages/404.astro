@@ -1,0 +1,19 @@
+---
+import * as stylex from '@stylexjs/stylex'
+
+import { Buddy } from '../components/ui/Bit.tsx'
+import Base from '../layouts/Base.astro'
+import { focus, layout, text } from '../styles/shared.ts'
+
+import { styles } from './_404.styles.ts'
+---
+
+<Base title="Page not found" description="This page does not exist on Byte Trail." noindex>
+  <main {...stylex.attrs(layout.wrap, styles.main)}>
+    <h1 {...stylex.attrs(text.display, text.h1, styles.title)}>Page not found</h1>
+    <Buddy mood="wow" size="large" xstyle={styles.buddy}>
+      Whoa, the trail ends here! This page does not exist, but plenty of lessons do.
+    </Buddy>
+    <a href="/" {...stylex.attrs(styles.home, focus.ring)}>Back to the trailhead</a>
+  </main>
+</Base>

@@ -1,5 +1,6 @@
 import { defineESLintConfig } from '@ocavue/eslint-config'
 import stylex from '@stylexjs/eslint-plugin'
+import astro from 'eslint-plugin-astro'
 
 export default defineESLintConfig(
   {
@@ -9,6 +10,7 @@ export default defineESLintConfig(
   {
     ignores: ['legacy/**'],
   },
+  ...astro.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: { '@stylexjs': stylex },

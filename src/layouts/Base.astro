@@ -7,6 +7,7 @@ import { STORE_KEY } from '../lib/store.ts'
 import { THEME_CLASSES } from '../lib/theme.ts'
 import type { ModuleId } from '../lib/types.ts'
 import { moduleThemes } from '../styles/themes.ts'
+
 import { styles } from './base.styles.ts'
 
 interface Props {
@@ -45,8 +46,13 @@ const ogImage = new URL('/og.png', Astro.site)
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Byte Trail: learn web dev one small step at a time" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <script is:inline define:vars={{ key: STORE_KEY, classes: THEME_CLASSES }}>
@@ -61,6 +67,15 @@ const ogImage = new URL('/og.png', Astro.site)
         if (settings.calm) root.dataset.calm = ''
       } catch {}
     </script>
+    {
+      import.meta.env.DEV && (
+        // In dev, StyleX serves its CSS from a virtual module. The runtime refetches it on HMR.
+        <>
+          <link rel="stylesheet" href="/virtual:stylex.css" />
+          <script is:inline type="module" src="/@id/virtual:stylex:runtime" />
+        </>
+      )
+    }
   </head>
   <body {...stylex.attrs(styles.body, mod && moduleThemes[mod])}>
     <div {...stylex.attrs(styles.contours)} aria-hidden="true"></div>

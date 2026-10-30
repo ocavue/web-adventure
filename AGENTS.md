@@ -42,6 +42,8 @@ src/
 ### StyleX
 
 - Never call `stylex.create` in an `.astro` file: the compiler does not see `.astro` files. Put styles in a `.ts` or `.tsx` file and use `stylex.attrs(...)` in Astro, `stylex.props(...)` in Preact.
+- A style file inside `src/pages/` must start with `_` (for example `src/pages/_404.styles.ts`). Otherwise Astro treats it as a route.
+- In dev, `Base.astro` loads `/virtual:stylex.css` and the StyleX HMR runtime. Pages that do not use `Base` get no StyleX styles in dev.
 - Variables (`defineVars`) live only in `*.stylex.ts` files. `createTheme` calls live in other files, each bound to its own `const`.
 - Use tokens from `tokens.stylex.ts` for every color, font, radius, and shadow. Do not write raw colors in components, except one-off decorative colors.
 - The trail accent color is `accent.color`. Pages set it with `moduleThemes[mod]` on an ancestor.
