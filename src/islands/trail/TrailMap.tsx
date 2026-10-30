@@ -64,7 +64,8 @@ const styles = stylex.create({
     paddingInline: 0,
     display: 'grid',
     gap: 22,
-    paddingTop: 26,
+    // Room for the floating "Start" tag (34 px above the node, plus 4 px of float) below the camp head.
+    paddingTop: 48,
     paddingBottom: 6,
     justifyItems: 'center',
   },

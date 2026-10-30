@@ -18,7 +18,6 @@ function level(page: import('@playwright/test').Page, n: number) {
   return page.getByRole('region', { name: `Level ${n}: ${html.levels[n - 1].title}` })
 }
 
-// Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('a jump test opens level 2', async ({ page }) => {
   await seedProgress(page, player())
   await page.goto('/trail/html/')
@@ -53,7 +52,6 @@ test('a jump test opens level 2', async ({ page }) => {
   expect((await readProgress(page)).jumps).toEqual({ html: 2 })
 })
 
-// Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('the trail map shows done, current, and locked lessons', async ({ page }) => {
   await seedProgress(
     page,
@@ -86,7 +84,23 @@ test('the trail map shows done, current, and locked lessons', async ({ page }) =
   await expect(page.getByText('Level 1 · Lesson 3')).toBeVisible()
 })
 
-// Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
+test('the start tag floats clear of the camp head', async ({ page }) => {
+  await seedProgress(page, player())
+  await page.goto('/trail/html/')
+  await hydrated(page)
+  const head = level(page, 1)
+    .getByRole('heading', { name: 'Level 1: First Steps' })
+    .locator('..')
+    .locator('..')
+  const tag = level(page, 1).getByText('Start', { exact: true })
+  // Sample while the tag floats up and down.
+  for (let i = 0; i < 5; i++) {
+    const [headBox, tagBox] = [await head.boundingBox(), await tag.boundingBox()]
+    expect(tagBox!.y).toBeGreaterThanOrEqual(headBox!.y + headBox!.height)
+    await page.waitForTimeout(200)
+  }
+})
+
 test('a locked lesson explains how to open it', async ({ page }) => {
   await seedProgress(page, player({ lessons: lessonsDone('html', 1) }))
   await page.goto('/trail/html/')
@@ -95,7 +109,6 @@ test('a locked lesson explains how to open it', async ({ page }) => {
   await expect(page.getByText('Finish the lesson before this one to unlock it.')).toBeVisible()
 })
 
-// Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('a finished level offers practice', async ({ page }) => {
   await seedProgress(page, player({ lessons: lessonsDone('html', 3) }))
   await page.goto('/trail/html/')
@@ -133,7 +146,6 @@ test('the daily challenge is done for the day once played', async ({ page }) => 
 })
 
 test.describe('certificates', () => {
-  // Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
   test('a finished trail shows the certificate', async ({ page }) => {
     await seedProgress(page, player({ lessons: lessonsDone('html', 15, 3) }))
     await page.goto('/trail/html/')
