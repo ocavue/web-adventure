@@ -14,8 +14,9 @@ const styles = stylex.create({
     backgroundColor: { default: 'transparent', ':hover': colors.paper3 },
     color: { default: colors.ink2, ':hover': colors.ink },
     cursor: 'pointer',
-    width: 42,
-    height: 42,
+    // 44 px is the minimum tap target size.
+    width: 44,
+    height: 44,
     borderRadius: 12,
     display: 'grid',
     placeItems: 'center',

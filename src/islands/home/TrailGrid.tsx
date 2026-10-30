@@ -50,7 +50,7 @@ const styles = stylex.create({
     transitionTimingFunction: 'ease',
   },
   info: { display: 'grid', gap: 6, minWidth: 0 },
-  name: { fontFamily: fonts.display, fontWeight: 800, fontSize: 20, lineHeight: 1.1 },
+  name: { fontFamily: fonts.display, fontWeight: 800, fontSize: 20, lineHeight: 1.5 },
   sub: { fontSize: 14, color: colors.ink2 },
   progress: { display: 'grid', gap: 6 },
   foot: {

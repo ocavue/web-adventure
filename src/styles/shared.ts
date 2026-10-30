@@ -51,10 +51,15 @@ export const layout = stylex.create({
 })
 
 export const surface = stylex.create({
+  /** A white card with a thin outline. */
   panel: {
     backgroundColor: colors.paper2,
     borderRadius: radii.l,
-    padding: 18,
+    padding: 16,
+    boxShadow: `inset 0 0 0 1.5px ${colors.line}`,
+  },
+  /** Lifts a `panel` off the page with a soft shadow. Apply it after `panel`. */
+  raised: {
     boxShadow: `${shadows.card}, inset 0 0 0 1.5px ${colors.line}`,
   },
 })

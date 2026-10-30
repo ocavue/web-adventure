@@ -24,7 +24,7 @@ const styles = stylex.create({
     fontWeight: 700,
     fontSize: 16,
     letterSpacing: '0.01em',
-    lineHeight: 1.2,
+    lineHeight: 1.5,
     textDecoration: 'none',
     paddingBlock: 12,
     paddingInline: 20,
@@ -75,7 +75,8 @@ const styles = stylex.create({
     boxShadow: 'none',
   },
   small: {
-    minHeight: 38,
+    // Legacy was 38 px. 44 px meets the minimum tap target size.
+    minHeight: 44,
     paddingBlock: 8,
     paddingInline: 14,
     fontSize: 14,

@@ -7,7 +7,7 @@ import { SegmentedControl } from '../../components/ui/SegmentedControl.tsx'
 import { Switch } from '../../components/ui/Switch.tsx'
 import { sfx } from '../../lib/sound.ts'
 import { freshState, progress, replaceProgress, updateProgress } from '../../lib/store.ts'
-import { toast } from '../../lib/toast.ts'
+import { toast, toastAfterNavigation } from '../../lib/toast.ts'
 import type { Settings } from '../../lib/types.ts'
 import { settingsOpen } from '../../lib/ui-state.ts'
 import { colors } from '../../styles/tokens.stylex.ts'
@@ -82,8 +82,9 @@ function ResetZone() {
             next.settings = { ...progress.peek().settings }
             next.onboarded = true
             replaceProgress(next)
-            close()
-            toast('Progress reset. A fresh trail awaits!')
+            // A fresh trail starts at the trailhead.
+            toastAfterNavigation({ text: 'Progress reset. A fresh trail awaits!' })
+            location.assign('/')
           }}
         >
           Erase everything

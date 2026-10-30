@@ -2,8 +2,9 @@
 import * as stylex from '@stylexjs/stylex'
 
 import { Buddy } from '../components/ui/Bit.tsx'
+import { Button } from '../components/ui/Button.tsx'
 import Base from '../layouts/Base.astro'
-import { focus, layout, text } from '../styles/shared.ts'
+import { layout, text } from '../styles/shared.ts'
 
 import { styles } from './_404.styles.ts'
 ---
@@ -14,6 +15,6 @@ import { styles } from './_404.styles.ts'
     <Buddy mood="wow" size="large" xstyle={styles.buddy}>
       Whoa, the trail ends here! This page does not exist, but plenty of lessons do.
     </Buddy>
-    <a href="/" {...stylex.attrs(styles.home, focus.ring)}>Back to the trailhead</a>
+    <Button href="/" variant="primary" icon="map">Back to the trailhead</Button>
   </main>
 </Base>

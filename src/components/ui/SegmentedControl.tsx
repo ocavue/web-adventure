@@ -25,7 +25,7 @@ const styles = stylex.create({
     cursor: 'pointer',
     fontWeight: 700,
     fontSize: 14,
-    lineHeight: 1.3,
+    lineHeight: 1.5,
     color: colors.ink2,
   },
   pressed: {

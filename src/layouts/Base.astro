@@ -23,9 +23,19 @@ interface Props {
   jsonLd?: Record<string, unknown>
   /** Renders the app shell: top bar, settings, onboarding, and toasts. The lesson page turns it off. */
   topbar?: boolean
+  /** Offers the welcome dialog to a new player. Only the home and trail pages turn it on. */
+  onboarding?: boolean
 }
 
-const { title, description, mod, noindex = false, jsonLd, topbar = true } = Astro.props
+const {
+  title,
+  description,
+  mod,
+  noindex = false,
+  jsonLd,
+  topbar = true,
+  onboarding = false,
+} = Astro.props
 const fullTitle = title === 'Byte Trail' ? title : `${title} · Byte Trail`
 const canonical = new URL(Astro.url.pathname, Astro.site)
 const ogImage = new URL('/og.png', Astro.site)
@@ -96,7 +106,7 @@ const ogImage = new URL('/og.png', Astro.site)
   <body {...stylex.attrs(styles.body, mod && moduleThemes[mod])}>
     <div {...stylex.attrs(styles.contours)} aria-hidden="true"></div>
     <div {...stylex.attrs(styles.safeArea)} aria-hidden="true"></div>
-    {topbar && <AppShell client:load />}
+    {topbar && <AppShell onboarding={onboarding} client:load />}
     <slot />
   </body>
 </html>

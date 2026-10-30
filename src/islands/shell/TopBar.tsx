@@ -85,12 +85,8 @@ const styles = stylex.create({
   ringDone: { stroke: colors.good },
   nav: {
     display: 'flex',
-    gap: 2,
+    gap: { default: 2, [TINY]: 0 },
     marginLeft: { default: 0, [TINY]: 'auto' },
-  },
-  navBtn: {
-    width: { default: 42, [TINY]: 34 },
-    height: { default: 42, [TINY]: 38 },
   },
 })
 
@@ -176,8 +172,8 @@ export function TopBar({ state, ready = true }: TopBarProps) {
           </Chip>
         </div>
         <nav aria-label="Main" {...stylex.props(styles.nav)}>
-          <IconButton href="/profile" icon="user" label="Your progress" xstyle={styles.navBtn} />
-          <IconButton icon="gear" label="Settings" onClick={openSettings} xstyle={styles.navBtn} />
+          <IconButton href="/profile" icon="user" label="Your progress" />
+          <IconButton icon="gear" label="Settings" onClick={openSettings} />
         </nav>
       </div>
     </header>

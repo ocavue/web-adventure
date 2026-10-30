@@ -12,8 +12,13 @@ import { OnboardingDialog } from './OnboardingDialog.tsx'
 import { SettingsDialog } from './SettingsDialog.tsx'
 import { TopBar } from './TopBar.tsx'
 
+export interface AppShellProps {
+  /** Shows the welcome dialog to a new player. */
+  onboarding?: boolean
+}
+
 /** The app shell on every page but the lesson: top bar, settings, onboarding, toasts, announcer. */
-export function AppShell() {
+export function AppShell({ onboarding = false }: AppShellProps) {
   const { state, ready } = useProgressState()
   // Badges earned in a lesson the player left early wait for the next page.
   useEffect(showPendingToasts, [])
@@ -25,7 +30,7 @@ export function AppShell() {
     <>
       <TopBar state={state} ready={ready} />
       <SettingsDialog />
-      <OnboardingDialog state={state} ready={ready} />
+      {onboarding && <OnboardingDialog state={state} ready={ready} />}
       <Toaster />
       <Announcer />
     </>

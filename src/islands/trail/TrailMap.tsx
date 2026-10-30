@@ -54,6 +54,7 @@ const styles = stylex.create({
   },
   headLocked: { opacity: 0.85 },
   headText: { flex: '1', minWidth: 180 },
+  // `ink3` on the faded locked head and over contour lines falls below 4.5:1.
   elev: { fontFamily: fonts.mono, fontSize: 12, color: colors.ink2 },
   path: { position: 'relative' },
   nodes: {
@@ -163,6 +164,7 @@ const styles = stylex.create({
     gap: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    // `ink3` falls below 4.5:1 where a contour line crosses the note.
     color: colors.ink2,
     fontSize: 14,
     paddingTop: 16,

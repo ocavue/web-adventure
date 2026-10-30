@@ -36,8 +36,8 @@ const styles = stylex.create({
   },
   main: { display: 'flex', flexDirection: 'column', gap: 18, justifyContent: 'center' },
   title: { marginTop: 6 },
-  side: { display: 'grid', gap: 12, alignContent: 'start' },
-  continue: { display: 'flex', alignItems: 'center', gap: 14, padding: 16 },
+  side: { display: 'grid', gap: 12 },
+  continue: { display: 'flex', alignItems: 'center', gap: 14 },
   meta: { minWidth: 0, flex: '1' },
   continueTitle: {
     fontFamily: fonts.display,
@@ -138,7 +138,7 @@ function ContinueCard({
   if (!next) return null
   const m = MOD[next.mod]
   return (
-    <div {...stylex.props(surface.panel, styles.continue)}>
+    <div {...stylex.props(surface.panel, surface.raised, styles.continue)}>
       <Blaze glyph={m.glyph} mod={m.id} />
       <div {...stylex.props(styles.meta)}>
         <p {...stylex.props(text.eyebrow)}>{started ? 'Continue' : 'Start here'}</p>
