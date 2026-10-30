@@ -48,6 +48,7 @@ src/
 - Use tokens from `tokens.stylex.ts` for every color, font, radius, and shadow. Do not write raw colors in components, except one-off decorative colors.
 - The trail accent color is `accent.color`. Pages set it with `moduleThemes[mod]` on an ancestor.
 - StyleX has no descendant selectors. Style each element directly. For parent states use `stylex.when.ancestor(':hover')` and `stylex.defaultMarker()`.
+- StyleX CSS is collected from modules the server build compiles. A `client:only` island is not in that build, so import its style modules from the page (see `src/islands/play/server-styles.ts`), or its screens have no CSS.
 - Components accept an optional `xstyle?: stylex.StyleXStyles` prop for overrides, applied last.
 - Every interactive element needs a visible focus ring: use `focus.ring` from `shared.ts`.
 - Respect reduced motion: `global.css` stops animations when the system asks for it or when the player turns on "Reduce motion".

@@ -18,6 +18,19 @@ export default defineConfig({
       },
       {
         extends: true,
+        // Pre-bundle browser dependencies up front. Discovering them during a run reloads the page and fails tests.
+        optimizeDeps: {
+          include: [
+            '@preact/signals',
+            '@testing-library/preact',
+            'canvas-confetti',
+            'preact',
+            'preact/compat',
+            'preact/hooks',
+            'preact/jsx-runtime',
+            'valibot',
+          ],
+        },
         test: {
           name: 'browser',
           include: ['src/**/*.test.tsx'],

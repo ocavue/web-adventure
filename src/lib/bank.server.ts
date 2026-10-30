@@ -8,7 +8,7 @@ import type { BankFile, CodeLang, LevelInfo, ModuleId, ServedBank } from './type
 const files = import.meta.glob<unknown>('../questions/*.json', { eager: true, import: 'default' })
 
 /** Reads and validates a question bank. Invalid data fails the build. */
-export function readBank(mod: ModuleId): BankFile {
+function readBank(mod: ModuleId): BankFile {
   const result = v.safeParse(BankFileSchema, files[`../questions/${mod}.json`])
   if (!result.success) {
     const issues = result.issues.map((i) => `${v.getDotPath(i) ?? ''}: ${i.message}`).join('\n')

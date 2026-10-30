@@ -99,13 +99,12 @@ const SavedSessionSchema = v.object({ savedAt: int, state: SessionStateSchema })
 
 export type SessionMeta = v.InferOutput<typeof SessionMetaSchema>
 /** A question in the session queue. `order` is the shuffled order of its choices. */
-export type SessionItem = v.InferOutput<typeof SessionItemSchema>
-export type AnswerResult = v.InferOutput<typeof AnswerResultSchema>
+type SessionItem = v.InferOutput<typeof SessionItemSchema>
+type AnswerResult = v.InferOutput<typeof AnswerResultSchema>
 /** The outcome of the last `check()`. */
 export type LastAnswer = v.InferOutput<typeof LastAnswerSchema>
 /** Everything about a running session. Plain JSON, so it can be saved and restored. */
 export type SessionState = v.InferOutput<typeof SessionStateSchema>
-export type SessionStatus = SessionState['status']
 
 /** The question on screen. */
 export interface SessionQuestion {
@@ -666,7 +665,7 @@ export function saveSession(session: Session): void {
 }
 
 /** Forgets the saved session of a request. */
-export function clearSession(request: PlayRequest): void {
+function clearSession(request: PlayRequest): void {
   try {
     sessionStorage.removeItem(storageKey(playHref(request)))
   } catch {

@@ -1,6 +1,5 @@
 import { signal } from '@preact/signals'
 
-import { MODULES } from './constants.ts'
 import type { ModuleId, Question, ServedBank } from './types.ts'
 
 interface ModuleBank {
@@ -35,16 +34,6 @@ export function loadBank(mod: ModuleId): Promise<ModuleBank> {
     pending.set(mod, p)
   }
   return p
-}
-
-export function loadAllBanks(): Promise<ModuleBank[]> {
-  return Promise.all(MODULES.map((m) => loadBank(m.id)))
-}
-
-/** Finds a question in the banks loaded so far. */
-export function qById(id: string): Question | undefined {
-  const mod = id.split('-')[0] as ModuleId
-  return banks.value[mod]?.all.find((q) => q.id === id)
 }
 
 /** Lessons are consecutive groups of questions within a level, in file order. */
