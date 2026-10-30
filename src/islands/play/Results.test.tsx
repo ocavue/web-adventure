@@ -60,7 +60,7 @@ describe('Results', () => {
     expect(screen.getByRole('img', { name: '3 of 3 stars' })).toBeTruthy()
     expect(screen.getByText('1:15')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Next lesson' }).getAttribute('href')).toBe(
-      '/play?mode=lesson&mod=html&level=1&lesson=0',
+      '/play/?mode=lesson&mod=html&level=1&lesson=0',
     )
   })
 
@@ -84,10 +84,10 @@ describe('Results', () => {
     expect(screen.getByText('Right')).toBeTruthy()
     expect(screen.queryByText('First try')).toBeNull()
     expect(screen.getByRole('link', { name: 'Try again' }).getAttribute('href')).toBe(
-      '/play?mode=jump&mod=css&level=3',
+      '/play/?mode=jump&mod=css&level=3',
     )
     expect(screen.getByRole('link', { name: 'Back to trail' }).getAttribute('href')).toBe(
-      '/trail/css',
+      '/trail/css/',
     )
   })
 

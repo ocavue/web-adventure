@@ -103,7 +103,7 @@ describe('Profile', () => {
       .map((li) => li.textContent)
     expect(tags).toEqual(['JavaScript · Arrays 2 missed', 'CSS · Arrays 1 missed'])
     expect(within(section).getByRole('link', { name: 'Practice these' }).getAttribute('href')).toBe(
-      '/play?mode=review',
+      '/play/?mode=review',
     )
   })
 

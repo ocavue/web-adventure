@@ -79,7 +79,7 @@ describe('PlayApp', () => {
     render(<PlayApp levels={levels} />)
     expect(await screen.findByRole('heading', { name: 'This lesson is still locked' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Back to the trail' }).getAttribute('href')).toBe(
-      '/trail/css',
+      '/trail/css/',
     )
     expect(fetch).not.toHaveBeenCalled()
   })

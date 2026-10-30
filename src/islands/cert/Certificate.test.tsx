@@ -36,7 +36,7 @@ describe('Certificate', () => {
     expect(screen.queryByRole('article')).toBeNull()
     expect(screen.getByText(/You have finished 14 so far/)).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Go to the CSS trail' }).getAttribute('href')).toBe(
-      '/trail/css',
+      '/trail/css/',
     )
   })
 

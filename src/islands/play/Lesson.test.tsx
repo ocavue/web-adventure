@@ -130,7 +130,7 @@ describe('Lesson', () => {
   it('leaves at once when nothing is answered yet', async () => {
     const { onLeave } = setup([single()])
     await userEvent.click(screen.getByRole('button', { name: 'Quit lesson' }))
-    expect(onLeave).toHaveBeenCalledWith('/trail/html')
+    expect(onLeave).toHaveBeenCalledWith('/trail/html/')
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
@@ -151,7 +151,7 @@ describe('Lesson', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Quit lesson' }))
     await screen.findByRole('dialog', { name: 'Take a break?' })
     await userEvent.click(screen.getByRole('button', { name: 'Leave' }))
-    expect(onLeave).toHaveBeenCalledWith('/trail/html')
+    expect(onLeave).toHaveBeenCalledWith('/trail/html/')
 
     // The next page shows the badge that the results screen would have shown.
     cleanup()

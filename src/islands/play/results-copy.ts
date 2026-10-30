@@ -3,6 +3,7 @@ import type { IconName } from '../../components/ui/icons.ts'
 import { CAMP_NAMES, ELEVATIONS, MOD, type ModuleInfo } from '../../lib/constants.ts'
 import type { LessonResult } from '../../lib/lesson.ts'
 import { lastPlayed, mistakes, nextLesson } from '../../lib/progress.ts'
+import { certHref, trailHref } from '../../lib/routes.ts'
 import { findQuestion, playHref } from '../../lib/selection.ts'
 import type { State } from '../../lib/types.ts'
 import { fmt } from '../../lib/utils.ts'
@@ -29,7 +30,7 @@ const home = (label = 'Back home'): ResultAction => ({ label, href: '/' })
 function trail(m: ModuleInfo, label = 'Back to trail'): ResultAction {
   return {
     label,
-    href: `/trail/${m.id}`,
+    href: trailHref(m.id),
   }
 }
 
@@ -63,7 +64,7 @@ function lessonCopy(r: LessonResult, m: ModuleInfo, s: State, levels: TrailLevel
   }
   const nl = nextLesson(m.id, s)
   const primary: ResultAction = r.summit
-    ? { label: 'See your certificate', href: `/cert/${m.id}` }
+    ? { label: 'See your certificate', href: certHref(m.id) }
     : nl
       ? { label: 'Next lesson', href: playHref({ mode: 'lesson', ...nl }), icon: 'play' }
       : trail(m)

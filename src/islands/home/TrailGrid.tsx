@@ -8,6 +8,7 @@ import type { ModuleInfo } from '../../lib/constants.ts'
 import { useProgressState } from '../../lib/hooks.ts'
 import type { ProgressState } from '../../lib/hooks.ts'
 import { modStats } from '../../lib/progress.ts'
+import { trailHref } from '../../lib/routes.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { focus, layout } from '../../styles/shared.ts'
 import { moduleThemes } from '../../styles/themes.ts'
@@ -106,7 +107,7 @@ function TrailCard({
 }) {
   const st = modStats(m.id, state)
   return (
-    <a href={`/trail/${m.id}`} {...stylex.props(moduleThemes[m.id], styles.card, focus.ring)}>
+    <a href={trailHref(m.id)} {...stylex.props(moduleThemes[m.id], styles.card, focus.ring)}>
       <Blaze glyph={m.glyph} mod={m.id} />
       <div {...stylex.props(styles.info)}>
         <h3 {...stylex.props(styles.name)}>{m.name}</h3>

@@ -15,6 +15,7 @@ import {
   type Session,
 } from '../../lib/lesson.ts'
 import { lastPlayed, nextLesson } from '../../lib/progress.ts'
+import { trailHref } from '../../lib/routes.ts'
 import {
   banksFor,
   DAILY_SIZE,
@@ -257,7 +258,7 @@ function Locked({ request }: { request: Extract<Phase, { name: 'locked' }>['requ
       title={copy.title}
       mood={request.mode === 'jump' ? 'happy' : 'calm'}
       actions={
-        <Button href={`/trail/${request.mod}`} variant="primary">
+        <Button href={trailHref(request.mod)} variant="primary">
           Back to the trail
         </Button>
       }

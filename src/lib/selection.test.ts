@@ -202,11 +202,11 @@ describe('playHref', () => {
     ]
     for (const req of requests) {
       const url = new URL(playHref(req), 'https://example.com')
-      expect(url.pathname).toBe('/play')
+      expect(url.pathname).toBe('/play/')
       expect(parsePlayParams(url.searchParams)).toEqual(req)
     }
     expect(playHref({ mode: 'lesson', mod: 'js', level: 1, lesson: 0 })).toBe(
-      '/play?mode=lesson&mod=js&level=1&lesson=0',
+      '/play/?mode=lesson&mod=js&level=1&lesson=0',
     )
   })
 })

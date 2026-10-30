@@ -8,6 +8,7 @@ import { Stars } from '../../components/ui/Stars.tsx'
 import { MOD } from '../../lib/constants.ts'
 import { useProgressState } from '../../lib/hooks.ts'
 import { modComplete, modStats } from '../../lib/progress.ts'
+import { trailHref } from '../../lib/routes.ts'
 import { toast } from '../../lib/toast.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { text } from '../../styles/shared.ts'
@@ -118,7 +119,7 @@ export function Certificate({ mod, questionCount }: CertificateProps) {
           Not quite at the summit yet! Finish all {st.total} lessons of the {m.name} trail to earn
           this certificate. You have finished {st.done} so far.
         </Buddy>
-        <Button variant="primary" href={`/trail/${mod}`}>
+        <Button variant="primary" href={trailHref(mod)}>
           Go to the {m.name} trail
         </Button>
       </div>

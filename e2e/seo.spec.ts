@@ -66,7 +66,7 @@ test('the home page has the trails and WebSite structured data', async ({ page }
   )
   for (const m of MODULES) {
     const card = page.getByRole('link').filter({ hasText: m.tagline })
-    await expect(card).toHaveAttribute('href', `/trail/${m.id}`)
+    await expect(card).toHaveAttribute('href', `/trail/${m.id}/`)
     await expect(card.getByRole('heading', { level: 3 })).toHaveText(m.name)
   }
   const questions = BANKS.reduce((n, b) => n + b.questions.length, 0)

@@ -10,6 +10,7 @@ import {
   modStats,
   nextLesson,
 } from './progress.ts'
+import { PLAY_PATH } from './routes.ts'
 import { ModuleIdSchema } from './schema.ts'
 import { progress } from './store.ts'
 import type { ModuleId, Question, State } from './types.ts'
@@ -164,7 +165,7 @@ export function playHref(req: PlayRequest): string {
     params.push(['mod', req.mod], ['level', String(req.level)])
   }
   if (req.mode === 'lesson') params.push(['lesson', String(req.lesson)])
-  return `/play?${new URLSearchParams(params).toString()}`
+  return `${PLAY_PATH}?${new URLSearchParams(params).toString()}`
 }
 
 /** The question banks to load before a request can start. A review needs only the trails of its mistakes. */

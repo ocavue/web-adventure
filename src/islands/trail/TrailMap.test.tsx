@@ -39,9 +39,9 @@ describe('TrailMap', () => {
       'Level 2 lesson 1, done, 3 stars',
       'Level 2 lesson 2, start here',
     ])
-    expect(links[1].getAttribute('href')).toBe('/play?mode=lesson&mod=css&level=2&lesson=1')
+    expect(links[1].getAttribute('href')).toBe('/play/?mode=lesson&mod=css&level=2&lesson=1')
     expect(screen.getByRole('link', { name: 'Practice level 1' }).getAttribute('href')).toBe(
-      '/play?mode=practice&mod=css&level=1',
+      '/play/?mode=practice&mod=css&level=1',
     )
     // Level 3 and up are locked, so they offer a jump test instead of lessons.
     expect(screen.getAllByRole('button', { name: 'Jump here' })).toHaveLength(3)
@@ -61,7 +61,7 @@ describe('TrailMap', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Jump to level 3?' })
     expect(dialog.textContent).toContain('levels 1 to 2')
     const start = screen.getByRole('link', { name: 'Start the test' })
-    expect(start.getAttribute('href')).toBe('/play?mode=jump&mod=js&level=3')
+    expect(start.getAttribute('href')).toBe('/play/?mode=jump&mod=js&level=3')
     await waitFor(() => expect(document.activeElement).toBe(start))
   })
 
@@ -73,7 +73,7 @@ describe('TrailMap', () => {
     render(<TrailMap mod="git" levels={levels} />)
     expect(screen.getByRole('heading', { name: 'Summit reached!' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'View certificate' }).getAttribute('href')).toBe(
-      '/cert/git',
+      '/cert/git/',
     )
   })
 })

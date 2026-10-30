@@ -26,7 +26,7 @@ describe('HomeHero', () => {
     expect(screen.getByRole('heading', { name: 'How it works' })).toBeTruthy()
     expect(screen.queryByRole('heading', { name: 'Review' })).toBeNull()
     expect(screen.getByRole('link', { name: /^Go/ }).getAttribute('href')).toBe(
-      '/play?mode=lesson&mod=html&level=1&lesson=0',
+      '/play/?mode=lesson&mod=html&level=1&lesson=0',
     )
   })
 
@@ -44,7 +44,7 @@ describe('HomeHero', () => {
     expect(screen.getByRole('heading', { name: 'Bug Spotter' })).toBeTruthy()
     expect(screen.getByText('1 question to lock in. Practice makes them stick.')).toBeTruthy()
     expect(screen.getByRole('link', { name: /^Practice/ }).getAttribute('href')).toBe(
-      '/play?mode=review',
+      '/play/?mode=review',
     )
     const daily = screen.getByRole('button', { name: 'Daily challenge done' })
     expect(daily.hasAttribute('disabled')).toBe(true)

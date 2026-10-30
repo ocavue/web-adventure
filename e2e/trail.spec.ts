@@ -61,7 +61,7 @@ test('the trail map shows done, current, and locked lessons', async ({ page }) =
   await expect(camp.getByRole('link', { name: 'Level 1 lesson 2, done, 2 stars' })).toBeVisible()
   await expect(camp.getByRole('img', { name: '2 of 3 stars' })).toBeVisible()
   const current = camp.getByRole('link', { name: 'Level 1 lesson 3, start here' })
-  await expect(current).toHaveAttribute('href', '/play?mode=lesson&mod=html&level=1&lesson=2')
+  await expect(current).toHaveAttribute('href', '/play/?mode=lesson&mod=html&level=1&lesson=2')
   await expect(camp.getByText('Start', { exact: true })).toBeVisible()
   await expect(page.getByText('2/15 lessons')).toBeVisible()
   await expect(page.getByText('5 stars', { exact: true })).toBeVisible()

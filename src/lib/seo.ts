@@ -1,5 +1,6 @@
 import type { TrailSummary } from './bank.server.ts'
 import { LESSONS_PER_LEVEL, LEVELS, MOD, MODULES, Q_PER_LESSON } from './constants.ts'
+import { trailHref } from './routes.ts'
 import type { ModuleId } from './types.ts'
 
 export const SITE_URL = 'https://web-adventure.pages.dev'
@@ -24,7 +25,7 @@ const provider = { '@type': 'Organization', name: SITE_NAME, url: `${SITE_URL}/`
 
 /** The canonical URL of a trail page. Pages are folders, so the URL ends with a slash. */
 function trailUrl(mod: ModuleId): string {
-  return `${SITE_URL}/trail/${mod}/`
+  return `${SITE_URL}${trailHref(mod)}`
 }
 
 /** Structured data for the home page: the site and the list of its trails. */

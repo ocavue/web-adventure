@@ -3,6 +3,7 @@ import * as stylex from '@stylexjs/stylex'
 import { Chip } from '../../components/ui/Chip.tsx'
 import { IconButton } from '../../components/ui/IconButton.tsx'
 import { currentStreak, dailyXp } from '../../lib/progress.ts'
+import { PROFILE_HREF } from '../../lib/routes.ts'
 import type { State } from '../../lib/types.ts'
 import { openSettings } from '../../lib/ui-state.ts'
 import { fmt } from '../../lib/utils.ts'
@@ -172,7 +173,7 @@ export function TopBar({ state, ready = true }: TopBarProps) {
           </Chip>
         </div>
         <nav aria-label="Main" {...stylex.props(styles.nav)}>
-          <IconButton href="/profile" icon="user" label="Your progress" />
+          <IconButton href={PROFILE_HREF} icon="user" label="Your progress" />
           <IconButton icon="gear" label="Settings" onClick={openSettings} />
         </nav>
       </div>

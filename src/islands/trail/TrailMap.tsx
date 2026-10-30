@@ -10,6 +10,7 @@ import { Stars } from '../../components/ui/Stars.tsx'
 import { CAMP_NAMES, ELEVATIONS, MOD } from '../../lib/constants.ts'
 import { useProgressState } from '../../lib/hooks.ts'
 import { modStats } from '../../lib/progress.ts'
+import { certHref } from '../../lib/routes.ts'
 import { playHref } from '../../lib/selection.ts'
 import { reducedMotion } from '../../lib/theme.ts'
 import { toast } from '../../lib/toast.ts'
@@ -237,7 +238,7 @@ export function TrailMap({ mod, levels }: TrailMapProps) {
             : `Finish all ${st.total} lessons to earn your ${m.name} certificate.`}
         </p>
         {complete && (
-          <Button variant="primary" href={`/cert/${mod}`}>
+          <Button variant="primary" href={certHref(mod)}>
             View certificate
           </Button>
         )}

@@ -13,6 +13,7 @@ import { banks, loadBank } from '../../lib/bank.ts'
 import { BADGES, MOD, MODULES } from '../../lib/constants.ts'
 import { useProgressState } from '../../lib/hooks.ts'
 import { currentStreak, modComplete, modStats, rankOf } from '../../lib/progress.ts'
+import { certHref } from '../../lib/routes.ts'
 import { playHref } from '../../lib/selection.ts'
 import type { ModuleId } from '../../lib/types.ts'
 import { openSettings } from '../../lib/ui-state.ts'
@@ -282,7 +283,7 @@ export function Profile() {
           <ul {...stylex.props(styles.tags)}>
             {certs.map((m) => (
               <li key={m.id}>
-                <Button href={`/cert/${m.id}`}>{m.name}</Button>
+                <Button href={certHref(m.id)}>{m.name}</Button>
               </li>
             ))}
           </ul>

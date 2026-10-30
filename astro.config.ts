@@ -11,6 +11,8 @@ const NOINDEX = /^\/(?:play|profile|cert|404)(?:\/|$)/
 export default defineConfig({
   site: SITE_URL,
   output: 'static',
+  // Pages build to `<path>/index.html`; links use the same form (see `src/lib/routes.ts`).
+  trailingSlash: 'always',
   build: {
     // StyleX appends its CSS to an emitted stylesheet, so stylesheets must not be inlined.
     inlineStylesheets: 'never',
