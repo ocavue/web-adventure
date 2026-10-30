@@ -3,6 +3,7 @@ import '../styles/global.css'
 
 import * as stylex from '@stylexjs/stylex'
 
+import { SiteFooter } from '../components/ui/SiteFooter.tsx'
 import { AppShell } from '../islands/shell/AppShell.tsx'
 import { STORE_KEY } from '../lib/store.ts'
 import { THEME_CLASSES, THEME_COLORS } from '../lib/theme.ts'
@@ -108,5 +109,6 @@ const ogImage = new URL('/og.png', Astro.site)
     <div {...stylex.attrs(styles.safeArea)} aria-hidden="true"></div>
     {topbar && <AppShell onboarding={onboarding} client:load />}
     <slot />
+    {topbar && <SiteFooter />}
   </body>
 </html>

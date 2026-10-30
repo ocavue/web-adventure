@@ -163,3 +163,15 @@ test('an unknown path returns the 404 page', async ({ request }) => {
   expect(body).toContain('Page not found')
   expect(body).toContain('<meta name="robots" content="noindex">')
 })
+
+test('every page except the lesson links to the source code on GitHub', async ({ page }) => {
+  for (const path of [...INDEXABLE, '/profile/', '/cert/html/', '/404']) {
+    await page.goto(path)
+    const link = page
+      .getByRole('contentinfo')
+      .getByRole('link', { name: 'github.com/ocavue/web-adventure' })
+    await expect(link, path).toHaveAttribute('href', 'https://github.com/ocavue/web-adventure')
+  }
+  await openStatic(page, '/play/')
+  await expect(page.getByRole('contentinfo')).toHaveCount(0)
+})
