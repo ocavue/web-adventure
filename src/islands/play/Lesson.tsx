@@ -309,6 +309,16 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
     return () => observer.disconnect()
   }, [])
 
+  // Scrolling into view (the right choice after a miss, or a focused choice) stops above the dock.
+  useEffect(() => {
+    const root = document.documentElement
+    // A little more, so the bottom edge of a choice shows too.
+    root.style.scrollPaddingBottom = `${dockHeight + 12}px`
+    return () => {
+      root.style.scrollPaddingBottom = ''
+    }
+  }, [dockHeight])
+
   if (!current) return null
   const q = current.question
   const sub = subLine(q)

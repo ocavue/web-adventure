@@ -111,7 +111,7 @@ const styles = stylex.create({
     borderWidth: 0,
     backgroundColor: 'transparent',
     fontSize: 13,
-    color: { default: colors.ink3, ':hover': colors.ink },
+    color: { default: colors.ink2, ':hover': colors.ink },
     textDecoration: 'underline',
     cursor: 'pointer',
     padding: 0,

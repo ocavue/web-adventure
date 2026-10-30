@@ -22,8 +22,9 @@ export const TRAIL_DESCRIPTIONS: Record<ModuleId, string> = {
 
 const provider = { '@type': 'Organization', name: SITE_NAME, url: `${SITE_URL}/` }
 
+/** The canonical URL of a trail page. Pages are folders, so the URL ends with a slash. */
 function trailUrl(mod: ModuleId): string {
-  return `${SITE_URL}/trail/${mod}`
+  return `${SITE_URL}/trail/${mod}/`
 }
 
 /** Structured data for the home page: the site and the list of its trails. */

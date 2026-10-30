@@ -67,6 +67,12 @@ src/
 - Choices are shuffled at runtime. Never write position-based choices such as "All of the above".
 - Fill answers are case-insensitive, except camelCase identifiers in `js`/`ts`/`react` and CLI flags.
 
+### E2E tests
+
+- `e2e/server.ts` serves `dist/` like Cloudflare Pages: `/play` redirects to `/play/`, and an unknown path gets `404.html` with status 404. Run `pnpm run build` before `pnpm run test:e2e`.
+- Helpers live in `e2e/support.ts`. Its `test` fails on any console error or page error.
+- Island buttons do nothing before hydration. Call `hydrated(page)` before clicking one on a fresh page.
+
 ### Tone
 
 Warm and encouraging. Wrong answers never cost anything; they come back at the end of the lesson. Bit, the mascot, cheers the player on.
@@ -79,12 +85,12 @@ Warm and encouraging. Wrong answers never cost anything; they come back at the e
 
 ## Scripts
 
-| Script               | What it does                                             |
-| -------------------- | -------------------------------------------------------- |
-| `pnpm run dev`       | Starts the dev server.                                   |
-| `pnpm run build`     | Builds the static site into `dist/`.                     |
-| `pnpm run typecheck` | Runs `astro check` (TypeScript and `.astro` files).      |
-| `pnpm run lint`      | Runs ESLint, oxfmt, and knip.                            |
-| `pnpm run fix`       | Formats and fixes lint errors.                           |
-| `pnpm run test`      | Unit tests (Node) and component tests (Chromium).        |
-| `pnpm run test:e2e`  | Builds nothing. Runs Playwright against `astro preview`. |
+| Script               | What it does                                        |
+| -------------------- | --------------------------------------------------- |
+| `pnpm run dev`       | Starts the dev server.                              |
+| `pnpm run build`     | Builds the static site into `dist/`.                |
+| `pnpm run typecheck` | Runs `astro check` (TypeScript and `.astro` files). |
+| `pnpm run lint`      | Runs ESLint, oxfmt, and knip.                       |
+| `pnpm run fix`       | Formats and fixes lint errors.                      |
+| `pnpm run test`      | Unit tests (Node) and component tests (Chromium).   |
+| `pnpm run test:e2e`  | Builds nothing. Runs Playwright against `dist/`.    |

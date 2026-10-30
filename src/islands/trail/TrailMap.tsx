@@ -55,7 +55,7 @@ const styles = stylex.create({
   },
   headLocked: { opacity: 0.85 },
   headText: { flex: '1', minWidth: 180 },
-  elev: { fontFamily: fonts.mono, fontSize: 12, color: colors.ink3 },
+  elev: { fontFamily: fonts.mono, fontSize: 12, color: colors.ink2 },
   path: { position: 'relative' },
   nodes: {
     listStyle: 'none',
@@ -164,7 +164,7 @@ const styles = stylex.create({
     gap: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    color: colors.ink3,
+    color: colors.ink2,
     fontSize: 14,
     paddingTop: 16,
     paddingBottom: 4,

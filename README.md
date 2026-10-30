@@ -13,17 +13,17 @@ pnpm install
 pnpm run dev
 ```
 
-| Script                  | What it does                                                  |
-| ----------------------- | ------------------------------------------------------------- |
-| `pnpm run dev`          | Starts the Astro dev server.                                  |
-| `pnpm run build`        | Builds the static site into `dist/`.                          |
-| `pnpm run preview`      | Serves `dist/` locally.                                       |
-| `pnpm run typecheck`    | Runs `astro check` (TypeScript and `.astro` files).           |
-| `pnpm run lint`         | Runs ESLint, oxfmt, and knip.                                 |
-| `pnpm run fix`          | Formats the code and fixes lint errors.                       |
-| `pnpm run test`         | Runs unit tests in Node and component tests in Chromium.      |
-| `pnpm run test:e2e`     | Runs the Playwright tests against `astro preview` of `dist/`. |
-| `pnpm run test:install` | Installs Chromium for the component and e2e tests.            |
+| Script                  | What it does                                             |
+| ----------------------- | -------------------------------------------------------- |
+| `pnpm run dev`          | Starts the Astro dev server.                             |
+| `pnpm run build`        | Builds the static site into `dist/`.                     |
+| `pnpm run preview`      | Serves `dist/` locally.                                  |
+| `pnpm run typecheck`    | Runs `astro check` (TypeScript and `.astro` files).      |
+| `pnpm run lint`         | Runs ESLint, oxfmt, and knip.                            |
+| `pnpm run fix`          | Formats the code and fixes lint errors.                  |
+| `pnpm run test`         | Runs unit tests in Node and component tests in Chromium. |
+| `pnpm run test:e2e`     | Runs the Playwright tests against the built `dist/`.     |
+| `pnpm run test:install` | Installs Chromium for the component and e2e tests.       |
 
 ## Layout
 
