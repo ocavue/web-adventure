@@ -7,14 +7,14 @@ export function downloadBackup(): void {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `byte-trail-backup-${todayStr()}.json`
+  a.download = `web-adventure-backup-${todayStr()}.json`
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 /**
  * Merges a backup file into the current progress, so nothing earned on either side is lost.
- * Returns `false` when the text is not a Byte Trail backup.
+ * Returns `false` when the text is not a Web Adventure backup.
  */
 export function restoreBackup(json: string): boolean {
   const backup = parseState(json)

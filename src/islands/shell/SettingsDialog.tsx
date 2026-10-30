@@ -207,7 +207,7 @@ function SettingsForm() {
               close()
               toast('Backup restored. Welcome back!')
             } else {
-              toast('That file is not a Byte Trail backup.')
+              toast('That file is not a Web Adventure backup.')
             }
           }}
         />

@@ -1,6 +1,6 @@
 {
-  "name": "Byte Trail",
-  "short_name": "Byte Trail",
+  "name": "Web Adventure",
+  "short_name": "Web Adventure",
   "description": "Learn web dev one small step at a time.",
   "start_url": "/",
   "display": "standalone",

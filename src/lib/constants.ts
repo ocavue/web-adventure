@@ -29,14 +29,14 @@ export const Q_PER_LESSON = 8
 export const CAMP_NAMES = ['Trailhead', 'Pine Camp', 'Ridge Camp', 'High Camp', 'Summit Push']
 export const ELEVATIONS = [400, 900, 1500, 2200, 3000]
 export const RANKS: [number, string][] = [
-  [0, 'Trail Newbie'],
-  [150, 'Code Scout'],
+  [0, 'Curious Coder'],
+  [150, 'Tag Tinkerer'],
   [400, 'Bug Spotter'],
-  [800, 'Junior Explorer'],
-  [1500, 'Stack Ranger'],
-  [2600, 'Web Pathfinder'],
+  [800, 'Div Wrangler'],
+  [1500, 'Script Slinger'],
+  [2600, 'Stack Voyager'],
   [4200, 'Summit Seeker'],
-  [6500, 'Trail Legend'],
+  [6500, 'Web Legend'],
 ]
 
 export type BadgeColor = ModuleId | 'blaze' | 'flame' | 'ember' | 'amber' | 'red'
@@ -82,7 +82,7 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'nohint',
-    name: 'Solo Hiker',
+    name: 'Solo Climber',
     desc: 'Finish a lesson without hints (from lesson 3 on)',
     icon: 'compass',
     color: 'css',
@@ -117,7 +117,7 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'explorer',
-    name: 'Explorer',
+    name: 'Globetrotter',
     desc: 'Try 4 different trails',
     icon: 'map',
     color: 'web',
@@ -166,7 +166,7 @@ export const BADGES: Badge[] = [
   },
   {
     id: 'allsummits',
-    name: 'Mountaineer',
+    name: 'Seven Summits',
     desc: 'Finish all seven trails',
     icon: 'crown',
     color: 'blaze',

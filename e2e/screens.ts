@@ -50,7 +50,7 @@ export const SCREENS: Screen[] = [
     open: async (page, theme) => {
       await seedProgress(page, { settings: { theme, sound: false, calm: false } })
       await page.goto('/')
-      await expect(page.getByRole('dialog', { name: 'Welcome to Byte Trail' })).toBeVisible()
+      await expect(page.getByRole('dialog', { name: 'Welcome to Web Adventure' })).toBeVisible()
     },
   },
   {

@@ -259,7 +259,7 @@ export function Results({ result: r, levels, restored = false }: ResultsProps) {
   useEffect(() => {
     window.scrollTo({ top: 0 })
     titleRef.current?.focus({ preventScroll: true })
-    document.title = `${copy.title} · Byte Trail`
+    document.title = `${copy.title} · Web Adventure`
     announce(`${copy.title} ${copy.line}`)
     if (restored) return
     const power = confettiPower(r)

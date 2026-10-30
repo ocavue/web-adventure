@@ -35,7 +35,7 @@ test('every indexable page has its own title, description, and social tags', asy
     await openStatic(page, path)
     const title = await page.title()
     const description = (await meta(page, 'name', 'description').getAttribute('content')) ?? ''
-    expect(title, path).toMatch(/Byte Trail/)
+    expect(title, path).toMatch(/Web Adventure/)
     expect(description.length, path).toBeGreaterThanOrEqual(80)
     titles.add(title)
     descriptions.add(description)
@@ -76,7 +76,7 @@ test('the home page has the trails and WebSite structured data', async ({ page }
 
   const data = (await jsonLd(page)) as { '@graph': { '@type': string; [k: string]: unknown }[] }
   const site = data['@graph'].find((x) => x['@type'] === 'WebSite')
-  expect(site).toMatchObject({ name: 'Byte Trail', url: `${SITE}/` })
+  expect(site).toMatchObject({ name: 'Web Adventure', url: `${SITE}/` })
   const list = data['@graph'].find((x) => x['@type'] === 'ItemList')
   expect(list).toMatchObject({
     itemListElement: INDEXABLE.slice(1).map((path, i) => ({ position: i + 1, url: SITE + path })),
@@ -88,7 +88,7 @@ for (const bank of BANKS) {
   test(`the ${mod} trail page has its levels and Course structured data`, async ({ page }) => {
     await openStatic(page, `/trail/${mod}/`)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(MOD[mod].name)
-    await expect(page).toHaveTitle(`${MOD[mod].name} trail · Byte Trail`)
+    await expect(page).toHaveTitle(`${MOD[mod].name} trail · Web Adventure`)
     for (const [i, info] of bank.levels.entries()) {
       const camp = page.getByRole('region', { name: `Level ${i + 1}: ${info.title}` })
       await expect(camp).toBeVisible()
@@ -99,7 +99,7 @@ for (const bank of BANKS) {
       '@type': 'Course',
       name: `${MOD[mod].name} trail`,
       url: `${SITE}/trail/${mod}/`,
-      provider: { '@type': 'Organization', name: 'Byte Trail' },
+      provider: { '@type': 'Organization', name: 'Web Adventure' },
       teaches: bank.levels.map((level) => level.title),
     })
   })

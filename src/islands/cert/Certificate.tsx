@@ -132,7 +132,7 @@ export function Certificate({ mod, questionCount }: CertificateProps) {
     month: 'long',
     day: 'numeric',
   })
-  const share = `I just reached the summit of the ${m.name} trail on Byte Trail: ${st.total} lessons, ${questionCount} questions, ${st.stars}/${maxStars} stars.`
+  const share = `I just reached the summit of the ${m.name} trail on Web Adventure: ${st.total} lessons, ${questionCount} questions, ${st.stars}/${maxStars} stars.`
 
   async function copyShare() {
     try {
@@ -156,9 +156,9 @@ export function Certificate({ mod, questionCount }: CertificateProps) {
         <Blaze glyph={m.glyph} mod={mod} />
         <p {...stylex.props(text.eyebrow, styles.printMuted)}>Certificate of completion</p>
         <p {...stylex.props(text.muted, styles.printMuted)}>This certifies that</p>
-        <p {...stylex.props(styles.who)}>{state.name || 'A determined hiker'}</p>
+        <p {...stylex.props(styles.who)}>{state.name || 'A determined traveler'}</p>
         <p>
-          reached the summit of the <b>{m.name}</b> trail on Byte Trail,
+          reached the summit of the <b>{m.name}</b> trail on Web Adventure,
           <br />
           answering {questionCount} questions across 5 levels.
         </p>

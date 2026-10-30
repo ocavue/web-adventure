@@ -34,7 +34,7 @@ export function Message({ title, mood = 'calm', children, actions }: MessageProp
   const titleRef = useRef<HTMLHeadingElement>(null)
   useEffect(() => {
     titleRef.current?.focus({ preventScroll: true })
-    document.title = `${title} · Byte Trail`
+    document.title = `${title} · Web Adventure`
   }, [title])
   return (
     <main {...stylex.props(layout.wrap, styles.main)}>

@@ -26,7 +26,7 @@ export function toast(content: ComponentChildren, ms = 2600): void {
   }, ms)
 }
 
-const PENDING_KEY = 'byte-trail:pending-toasts'
+const PENDING_KEY = 'web-adventure:pending-toasts'
 
 const PendingListSchema = v.array(
   v.object({ text: v.optional(v.string()), badge: v.optional(v.string()) }),

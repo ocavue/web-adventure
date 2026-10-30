@@ -5,7 +5,7 @@ import type { ModuleId } from './types.ts'
 
 export const SITE_URL = 'https://web-adventure.pages.dev'
 
-const SITE_NAME = 'Byte Trail'
+const SITE_NAME = 'Web Adventure'
 const SITE_DESCRIPTION =
   'A playful quiz site for beginner web developers. Learn HTML, CSS, JavaScript, TypeScript, React, Git, and how the web works, one small lesson at a time.'
 

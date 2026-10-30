@@ -10,7 +10,7 @@ import react from '../src/questions/react.json' with { type: 'json' }
 import ts from '../src/questions/ts.json' with { type: 'json' }
 import web from '../src/questions/web.json' with { type: 'json' }
 
-const STORE_KEY = 'byte-trail:v1'
+const STORE_KEY = 'web-adventure:v1'
 
 export const BANKS = [html, css, js, ts, web, react, git] as BankFile[]
 export const MOD_IDS: ModuleId[] = BANKS.map((b) => b.module)

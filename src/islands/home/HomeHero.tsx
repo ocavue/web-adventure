@@ -107,7 +107,7 @@ export function HomeHero({ titles, questionIds }: HomeHeroProps) {
       <div {...stylex.props(styles.main)}>
         <div>
           <p {...stylex.props(text.eyebrow)}>
-            {hello}, {state.name || 'hiker'}
+            {hello}, {state.name || 'traveler'}
           </p>
           <h1 {...stylex.props(text.display, text.h1, styles.title)}>
             {started ? 'Ready for a few more steps?' : 'Learn web dev one small step at a time.'}

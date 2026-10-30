@@ -149,7 +149,7 @@ function codeTheme(p: CodePalette): ThemeRegistration {
 }
 
 const lightCode = codeTheme({
-  name: 'byte-trail-light',
+  name: 'web-adventure-light',
   type: 'light',
   bg: '#f6f8f3',
   ink: '#132228',
@@ -165,7 +165,7 @@ const lightCode = codeTheme({
 })
 
 const darkCode = codeTheme({
-  name: 'byte-trail-dark',
+  name: 'web-adventure-dark',
   type: 'dark',
   bg: '#0f1f24',
   ink: '#e6efec',
@@ -193,7 +193,7 @@ export async function serveBank(mod: ModuleId): Promise<ServedBank> {
     if (q.code === undefined || !q.lang) return q
     const codeHtml = h.codeToHtml(q.code, {
       lang: SHIKI_LANG[q.lang],
-      themes: { light: 'byte-trail-light', dark: 'byte-trail-dark' },
+      themes: { light: 'web-adventure-light', dark: 'web-adventure-dark' },
       defaultColor: false,
     })
     return { ...q, codeHtml }

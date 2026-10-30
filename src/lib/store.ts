@@ -4,9 +4,9 @@ import * as v from 'valibot'
 import { StateSchema } from './schema.ts'
 import type { State } from './types.ts'
 
-export const STORE_KEY = 'byte-trail:v1'
+export const STORE_KEY = 'web-adventure:v1'
 /** Where a stored value that cannot be read is kept, so the next save does not lose it silently. */
-export const CORRUPT_KEY = 'byte-trail:v1:corrupt'
+export const CORRUPT_KEY = 'web-adventure:v1:corrupt'
 
 export function freshState(): State {
   return v.parse(StateSchema, { v: 1 })

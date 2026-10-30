@@ -21,9 +21,9 @@ import {
 
 const FIRST_LESSON = lessonUrl('html', 1, 0)
 
-test('a new hiker onboards, aces the first lesson, and keeps the progress', async ({ page }) => {
+test('a new player onboards, aces the first lesson, and keeps the progress', async ({ page }) => {
   await page.goto('/')
-  const welcome = page.getByRole('dialog', { name: 'Welcome to Byte Trail' })
+  const welcome = page.getByRole('dialog', { name: 'Welcome to Web Adventure' })
   await expect(welcome).toBeVisible()
   await welcome.getByLabel('What should we call you?').fill('Mia')
   await welcome.getByRole('button', { name: /Keen/ }).click()
@@ -56,7 +56,7 @@ test('a new hiker onboards, aces the first lesson, and keeps the progress', asyn
   await expect(page.getByText('New badges')).toBeVisible()
   await expect(page.getByText('First Steps', { exact: true })).toBeVisible()
 
-  await page.getByRole('link', { name: 'Byte Trail home' }).click()
+  await page.getByRole('link', { name: 'Web Adventure home' }).click()
   await expect(page).toHaveURL(/\/$/)
   await expect(xpChip(page, earned)).toBeVisible()
   await expect(page.getByText(/, Mia$/)).toBeVisible()

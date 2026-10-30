@@ -1,4 +1,4 @@
-# Byte Trail
+# Web Adventure
 
 A playful quiz site for beginner web developers: 7 trails (modules), 5 levels each, 3 lessons of 8 questions per level.
 
@@ -60,7 +60,7 @@ src/
 - Islands that render on the server read progress only through `useProgressState()`, which returns `{ state, ready, pending }`. Each component gets the fresh state until its own mount effect runs, so its hydration render matches the server HTML even when another island loaded the stored progress first. Never read `progress.value` or `progressReady` during render there. `useProgress()` is only for `client:only` islands (the lesson page).
 - Helpers in `src/lib/progress.ts` read the current progress by default. In islands, always pass the hook's `state` as the last argument.
 - The inline script in `Base.astro` sets `data-returning` on `<html>` when progress is stored. Spread `pending` on every element that shows progress: a rule in `global.css` hides `[data-pending]` for returning players until the island is ready, so they never see new-player content.
-- `StateSchema` is forgiving per field: invalid values fall back to defaults, records drop only bad entries. Unreadable stored data is copied to `byte-trail:v1:corrupt` before the next save.
+- `StateSchema` is forgiving per field: invalid values fall back to defaults, records drop only bad entries. Unreadable stored data is copied to `web-adventure:v1:corrupt` before the next save.
 - Mutating helpers (`addXp`, `touchStreak`) take the draft as their first argument.
 
 ### Data

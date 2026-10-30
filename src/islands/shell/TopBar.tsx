@@ -108,7 +108,7 @@ export function TopBar({ state, ready = true }: TopBarProps) {
   return (
     <header {...stylex.props(styles.bar)}>
       <div {...stylex.props(styles.inner)}>
-        <a href="/" aria-label="Byte Trail home" {...stylex.props(styles.logo, focus.ring)}>
+        <a href="/" aria-label="Web Adventure home" {...stylex.props(styles.logo, focus.ring)}>
           <svg viewBox="0 0 32 32" aria-hidden="true" {...stylex.props(styles.mark)}>
             <rect x="7" y="3" width="18" height="26" rx="5" {...stylex.props(styles.markBody)} />
             <path
@@ -116,7 +116,7 @@ export function TopBar({ state, ready = true }: TopBarProps) {
               {...stylex.props(styles.markCode)}
             />
           </svg>
-          <span {...stylex.props(styles.word)}>Byte Trail</span>
+          <span {...stylex.props(styles.word)}>Web Adventure</span>
         </a>
         <div data-pending={ready ? undefined : ''} {...stylex.props(styles.chips)}>
           <Chip

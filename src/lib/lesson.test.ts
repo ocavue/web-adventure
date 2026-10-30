@@ -783,7 +783,7 @@ describe('saving and restoring', () => {
 
   it('discards corrupt data', () => {
     const { session } = started()
-    const key = 'byte-trail:session:' + session.href
+    const key = 'web-adventure:session:' + session.href
     const good = sessionStorage.getItem(key) ?? ''
     const parsed = JSON.parse(good) as { savedAt: number; state: SessionState }
     const [first, ...rest] = parsed.state.queue
@@ -841,7 +841,7 @@ describe('saving and restoring', () => {
   it('discards an old or corrupt result', () => {
     const { session } = started()
     play(session)
-    const key = 'byte-trail:result:' + session.href
+    const key = 'web-adventure:result:' + session.href
     const good = sessionStorage.getItem(key) ?? ''
     const parsed = JSON.parse(good) as { savedAt: number; result: { kind: string } }
     for (const raw of [

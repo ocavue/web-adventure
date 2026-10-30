@@ -95,7 +95,7 @@ test('a backup restores into a fresh browser', async ({ page, browser }, testInf
     page.waitForEvent('download'),
     dialog.getByRole('button', { name: 'Download backup' }).click(),
   ])
-  expect(download.suggestedFilename()).toMatch(/^byte-trail-backup-\d{4}-\d{2}-\d{2}\.json$/)
+  expect(download.suggestedFilename()).toMatch(/^web-adventure-backup-\d{4}-\d{2}-\d{2}\.json$/)
   const file = testInfo.outputPath('backup.json')
   await download.saveAs(file)
   const backup = JSON.parse(await readFile(file, 'utf8')) as { name: string; xp: number }
@@ -125,7 +125,7 @@ test('a backup restores into a fresh browser', async ({ page, browser }, testInf
     mimeType: 'application/json',
     buffer: Buffer.from('{"hello": "world"}'),
   })
-  await expect(other.getByText('That file is not a Byte Trail backup.')).toBeVisible()
+  await expect(other.getByText('That file is not a Web Adventure backup.')).toBeVisible()
 
   await settings.locator('#restorefile').setInputFiles(file)
   await expect(other.getByText('Backup restored. Welcome back!')).toBeVisible()

@@ -33,8 +33,8 @@ import { shuffle, todayStr } from './utils.ts'
 const JUMP_PASS = 8
 /** Saved sessions older than this start over. */
 const MAX_AGE_MS = 6 * 60 * 60 * 1000
-const STORAGE_PREFIX = 'byte-trail:session:'
-const RESULT_PREFIX = 'byte-trail:result:'
+const STORAGE_PREFIX = 'web-adventure:session:'
+const RESULT_PREFIX = 'web-adventure:result:'
 
 const int = v.pipe(v.number(), v.integer(), v.minValue(0))
 

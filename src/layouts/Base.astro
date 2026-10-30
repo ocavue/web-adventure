@@ -36,7 +36,7 @@ const {
   topbar = true,
   onboarding = false,
 } = Astro.props
-const fullTitle = title === 'Byte Trail' ? title : `${title} · Byte Trail`
+const fullTitle = title === 'Web Adventure' ? title : `${title} · Web Adventure`
 const canonical = new URL(Astro.url.pathname, Astro.site)
 const ogImage = new URL('/og.png', Astro.site)
 
@@ -54,14 +54,14 @@ const ogImage = new URL('/og.png', Astro.site)
     <meta name="theme-color" content={THEME_COLORS.light} media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content={THEME_COLORS.dark} media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Byte Trail" />
+    <meta property="og:site_name" content="Web Adventure" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Byte Trail: learn web dev one small step at a time" />
+    <meta property="og:image:alt" content="Web Adventure: learn web dev one small step at a time" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

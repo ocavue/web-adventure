@@ -1,4 +1,4 @@
-# Byte Trail
+# Web Adventure
 
 A playful quiz website for beginner web developers. Seven trails (HTML, CSS, JavaScript, TypeScript, Web Platform, React, Git & Tools), each with 5 levels of short lessons.
 

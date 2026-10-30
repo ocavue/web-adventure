@@ -168,7 +168,7 @@ export function Profile() {
         <IconButton href="/" icon="back" label="Back home" />
         <div {...pending} {...stylex.props(styles.title)}>
           <div {...stylex.props(text.eyebrow)}>{rank.name}</div>
-          <h1 {...stylex.props(text.display, text.h1, styles.name)}>{state.name || 'Hiker'}</h1>
+          <h1 {...stylex.props(text.display, text.h1, styles.name)}>{state.name || 'Traveler'}</h1>
         </div>
         <Button size="small" icon="gear" onClick={openSettings}>
           Edit

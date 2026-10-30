@@ -23,7 +23,7 @@ const questionIds = summaries.flatMap((s) => s.questionIds).join(' ')
 const description = `Learn web dev one small step at a time: ${MODULES.length} free trails, ${fmt(questions)} short quiz questions on HTML, CSS, JavaScript, TypeScript, React, Git, and the web.`
 ---
 
-<Base title="Byte Trail" description={description} jsonLd={websiteJsonLd()} onboarding>
+<Base title="Web Adventure" description={description} jsonLd={websiteJsonLd()} onboarding>
   <main {...stylex.attrs(layout.wrap)}>
     <HomeHero client:load titles={titles} questionIds={questionIds} />
     <section aria-labelledby="trails-title">

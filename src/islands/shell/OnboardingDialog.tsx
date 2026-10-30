@@ -71,7 +71,7 @@ function OnboardingForm({ titleId }: { titleId: string }) {
     <>
       <Buddy>Hi! I am Bit, your trail buddy. I will cheer you on.</Buddy>
       <h2 id={titleId} {...stylex.props(text.display, text.h2)}>
-        Welcome to Byte Trail
+        Welcome to Web Adventure
       </h2>
       <p {...stylex.props(styles.intro)}>
         Short, friendly lessons on HTML, CSS, JavaScript, TypeScript, the web platform, React, and
