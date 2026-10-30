@@ -16,7 +16,7 @@
     "fix:eslint": "eslint --cache --max-warnings 0 --fix",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "test:install": "playwright install chromium --no-shell",
+    "test:install": "playwright install chromium",
     "typecheck": "tsc -b",
     "postinstall": "simple-git-hooks"
   },
