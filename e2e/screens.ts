@@ -65,7 +65,7 @@ export const SCREENS: Screen[] = [
     name: 'trail page',
     open: async (page, theme) => {
       await seedProgress(page, returning(theme))
-      await page.goto('/trail/css')
+      await page.goto('/trail/css/')
       await expect(page.getByRole('link', { name: 'Level 2 lesson 2, start here' })).toBeVisible()
     },
   },
@@ -98,7 +98,7 @@ export const SCREENS: Screen[] = [
     name: 'profile',
     open: async (page, theme) => {
       await seedProgress(page, returning(theme))
-      await page.goto('/profile')
+      await page.goto('/profile/')
       await expect(page.getByRole('heading', { name: 'Mia', level: 1 })).toBeVisible()
     },
   },
@@ -106,7 +106,7 @@ export const SCREENS: Screen[] = [
     name: 'certificate',
     open: async (page, theme) => {
       await seedProgress(page, returning(theme))
-      await page.goto('/cert/html')
+      await page.goto('/cert/html/')
       await expect(page.getByRole('article', { name: 'HTML certificate' })).toBeVisible()
     },
   },

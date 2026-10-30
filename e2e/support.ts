@@ -107,7 +107,7 @@ export async function readProgress(page: Page): Promise<State> {
 
 /** The URL of a lesson. */
 export function lessonUrl(mod: ModuleId, level: number, lesson: number): string {
-  return `/play?mode=lesson&mod=${mod}&level=${level}&lesson=${lesson}`
+  return `/play/?mode=lesson&mod=${mod}&level=${level}&lesson=${lesson}`
 }
 
 // --- Lessons ------------------------------------------------------------------------------------

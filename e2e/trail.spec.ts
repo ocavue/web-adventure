@@ -21,7 +21,7 @@ function level(page: import('@playwright/test').Page, n: number) {
 // Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('a jump test opens level 2', async ({ page }) => {
   await seedProgress(page, player())
-  await page.goto('/trail/html')
+  await page.goto('/trail/html/')
   await expect(level(page, 2)).toContainText('Finish level 1 to open them.')
   await hydrated(page)
 
@@ -54,7 +54,7 @@ test('the trail map shows done, current, and locked lessons', async ({ page }) =
     page,
     player({ lessons: { 'html:1:0': { stars: 3, at: 1 }, 'html:1:1': { stars: 2, at: 2 } } }),
   )
-  await page.goto('/trail/html')
+  await page.goto('/trail/html/')
 
   const camp = level(page, 1)
   await expect(camp.getByRole('link', { name: 'Level 1 lesson 1, done, 3 stars' })).toBeVisible()
@@ -84,7 +84,7 @@ test('the trail map shows done, current, and locked lessons', async ({ page }) =
 // Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('a locked lesson explains how to open it', async ({ page }) => {
   await seedProgress(page, player({ lessons: lessonsDone('html', 1) }))
-  await page.goto('/trail/html')
+  await page.goto('/trail/html/')
   await hydrated(page)
   await level(page, 1).getByRole('button', { name: 'Level 1 lesson 3, locked' }).click()
   await expect(page.getByText('Finish the lesson before this one to unlock it.')).toBeVisible()
@@ -93,7 +93,7 @@ test('a locked lesson explains how to open it', async ({ page }) => {
 // Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
 test('a finished level offers practice', async ({ page }) => {
   await seedProgress(page, player({ lessons: lessonsDone('html', 3) }))
-  await page.goto('/trail/html')
+  await page.goto('/trail/html/')
   await expect(
     level(page, 2).getByRole('link', { name: 'Level 2 lesson 1, start here' }),
   ).toBeVisible()
@@ -131,7 +131,7 @@ test.describe('certificates', () => {
   // Hydration race bug (fixed separately): late islands keep server attributes, so this flakes.
   test('a finished trail shows the certificate', async ({ page }) => {
     await seedProgress(page, player({ lessons: lessonsDone('html', 15, 3) }))
-    await page.goto('/trail/html')
+    await page.goto('/trail/html/')
     await expect(page.getByRole('heading', { name: 'Summit reached!' })).toBeVisible()
     await page.getByRole('link', { name: 'View certificate' }).click()
 
@@ -146,7 +146,7 @@ test.describe('certificates', () => {
 
   test('an unfinished trail shows a friendly locked message', async ({ page }) => {
     await seedProgress(page, player({ lessons: lessonsDone('css', 4, 2) }))
-    await page.goto('/cert/css')
+    await page.goto('/cert/css/')
     await expect(page.getByText('Not quite at the summit yet!')).toBeVisible()
     await expect(page.getByText('You have finished 4 so far.')).toBeVisible()
     await expect(page.getByRole('article')).toHaveCount(0)

@@ -89,7 +89,7 @@ test('settings change the name, goal, theme, sound, and motion', async ({ page }
 
 test('a backup restores into a fresh browser', async ({ page, browser }, testInfo) => {
   await seedProgress(page, player({ xp: 420, lessons: lessonsDone('js', 2) }))
-  await page.goto('/profile')
+  await page.goto('/profile/')
   const dialog = await openSettings(page)
   const [download] = await Promise.all([
     page.waitForEvent('download'),

@@ -13,6 +13,8 @@ export default defineConfig({
   output: 'static',
   // Pages build to `<path>/index.html`; links use the same form (see `src/lib/routes.ts`).
   trailingSlash: 'always',
+  // The toolbar adds its own buttons (one is named "Settings") to every page in dev.
+  devToolbar: { enabled: false },
   build: {
     // StyleX appends its CSS to an emitted stylesheet, so stylesheets must not be inlined.
     inlineStylesheets: 'never',

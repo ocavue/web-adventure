@@ -104,7 +104,7 @@ test('a missed question shows the answer, comes back, and waits in Review', asyn
   await expect(page.getByRole('heading', { name: 'Daily challenge' })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Review' })).toHaveCount(0)
 
-  await page.goto('/play?mode=review')
+  await page.goto('/play/?mode=review')
   await expect(page.getByRole('heading', { name: 'Nothing to review' })).toBeVisible()
 })
 

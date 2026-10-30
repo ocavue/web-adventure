@@ -373,7 +373,7 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
         </div>
         <h1
           id="qprompt"
-          key={st.idx}
+          key={`prompt-${st.idx}`}
           ref={promptRef}
           tabIndex={-1}
           {...stylex.props(styles.prompt)}
@@ -397,7 +397,7 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
             />
           </pre>
         )}
-        <div ref={answersRef} key={st.idx}>
+        <div ref={answersRef} key={`answers-${st.idx}`}>
           <Answers
             session={session}
             current={current}
