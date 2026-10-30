@@ -1,8 +1,10 @@
 import { cleanup, render, screen } from '@testing-library/preact'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
+import { banks } from '../../lib/bank.ts'
 import type { LessonResult } from '../../lib/lesson.ts'
 import { freshState, replaceProgress } from '../../lib/store.ts'
+import type { Question } from '../../lib/types.ts'
 import css from '../../questions/css.json' with { type: 'json' }
 import git from '../../questions/git.json' with { type: 'json' }
 import html from '../../questions/html.json' with { type: 'json' }
@@ -64,7 +66,7 @@ describe('Results', () => {
 
   it('names the camp and the next level when a level is cleared', () => {
     render(<Results result={result({ stars: 2, campCleared: 1 })} levels={levels} />)
-    expect(title()).toBe('Pine Camp reached!')
+    expect(title()).toBe('Level 1 cleared!')
     expect(screen.getByText(new RegExp(`Next up: ${levels.html[1].title}`))).toBeTruthy()
   })
 
@@ -79,11 +81,46 @@ describe('Results', () => {
     })
     render(<Results result={r} levels={levels} />)
     expect(title()).toBe('Almost there! 7/10')
+    expect(screen.getByText('Right')).toBeTruthy()
+    expect(screen.queryByText('First try')).toBeNull()
     expect(screen.getByRole('link', { name: 'Try again' }).getAttribute('href')).toBe(
       '/play?mode=jump&mod=css&level=3',
     )
     expect(screen.getByRole('link', { name: 'Back to trail' }).getAttribute('href')).toBe(
       '/trail/css',
     )
+  })
+
+  it('marks every answer as correct or missed, not only by color', () => {
+    const all = html.questions.map((q) => ({ ...q, module: 'html' }) as Question)
+    banks.value = { html: { all, byLevel: [all] } }
+    const [a, b] = all
+    const r = result({
+      results: [
+        { id: a.id, ok: true, first: true, retry: false },
+        { id: b.id, ok: false, first: true, retry: false },
+        { id: b.id, ok: true, first: false, retry: true },
+      ],
+    })
+    render(<Results result={r} levels={levels} />)
+    expect(screen.getAllByText('Correct:')).toHaveLength(1)
+    expect(screen.getAllByText('Missed:')).toHaveLength(1)
+    banks.value = {}
+  })
+
+  it('counts only review cards whose questions still exist after a daily challenge', () => {
+    const all = html.questions.map((q) => ({ ...q, module: 'html' }) as Question)
+    banks.value = { html: { all, byLevel: [all] } }
+    replaceProgress({
+      ...freshState(),
+      seen: {
+        [all[0].id]: { c: 0, w: 1, miss: true },
+        'html-gone-1': { c: 0, w: 1, miss: true },
+      },
+    })
+    const r = result({ kind: 'daily', meta: {}, firstOk: 3, firstTotal: 5, acc: 0.6 })
+    render(<Results result={r} levels={levels} />)
+    expect(screen.getByText(/you have 1 review card waiting/)).toBeTruthy()
+    banks.value = {}
   })
 })

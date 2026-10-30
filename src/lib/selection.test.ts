@@ -8,6 +8,7 @@ import {
   jumpSet,
   lessonSet,
   parsePlayParams,
+  playAllowed,
   playHref,
   practiceSet,
   questionsFor,
@@ -211,10 +212,54 @@ describe('playHref', () => {
 })
 
 describe('banksFor', () => {
-  it('needs one bank for a trail and every bank for mixed sessions', () => {
-    expect(banksFor({ mode: 'practice', mod: 'css', level: 1 })).toEqual(['css'])
-    expect(banksFor({ mode: 'daily' })).toHaveLength(MODULES.length)
-    expect(banksFor({ mode: 'review' })).toHaveLength(MODULES.length)
+  it('needs one bank for a trail, every bank for the daily, and the missed trails for review', () => {
+    const s = freshState()
+    expect(banksFor({ mode: 'practice', mod: 'css', level: 1 }, s)).toEqual(['css'])
+    expect(banksFor({ mode: 'daily' }, s)).toHaveLength(MODULES.length)
+    expect(banksFor({ mode: 'review' }, s)).toEqual([])
+    const missed = stateWith((st) => {
+      st.seen['js-001'] = { c: 0, w: 1, miss: true }
+      st.seen['git-002'] = { c: 0, w: 1, miss: true }
+      st.seen['js-003'] = { c: 0, w: 1, miss: true }
+      st.seen['css-004'] = { c: 1, w: 1 }
+    })
+    expect(banksFor({ mode: 'review' }, missed).toSorted()).toEqual(['git', 'js'])
+  })
+})
+
+describe('playAllowed', () => {
+  const done = (st: State, mod: ModuleId, level: number, lessons: number) => {
+    for (let i = 0; i < lessons; i++) st.lessons[lkey(mod, level, i)] = { stars: 2, at: 1 }
+  }
+
+  it('opens a lesson only after the one before it, and replays finished lessons', () => {
+    const s = stateWith((st) => done(st, 'js', 1, 1))
+    expect(playAllowed({ mode: 'lesson', mod: 'js', level: 1, lesson: 0 }, s)).toBe(true)
+    expect(playAllowed({ mode: 'lesson', mod: 'js', level: 1, lesson: 1 }, s)).toBe(true)
+    expect(playAllowed({ mode: 'lesson', mod: 'js', level: 1, lesson: 2 }, s)).toBe(false)
+    expect(playAllowed({ mode: 'lesson', mod: 'js', level: 2, lesson: 0 }, s)).toBe(false)
+  })
+
+  it('opens practice only for a finished level', () => {
+    const s = stateWith((st) => done(st, 'js', 1, 3))
+    expect(playAllowed({ mode: 'practice', mod: 'js', level: 1 }, s)).toBe(true)
+    expect(playAllowed({ mode: 'practice', mod: 'js', level: 2 }, s)).toBe(false)
+  })
+
+  it('offers a jump test only for a level that is still locked', () => {
+    const s = stateWith((st) => {
+      done(st, 'js', 1, 3)
+      st.jumps.css = 3
+    })
+    expect(playAllowed({ mode: 'jump', mod: 'js', level: 2 }, s)).toBe(false)
+    expect(playAllowed({ mode: 'jump', mod: 'js', level: 3 }, s)).toBe(true)
+    expect(playAllowed({ mode: 'jump', mod: 'css', level: 3 }, s)).toBe(false)
+    expect(playAllowed({ mode: 'jump', mod: 'css', level: 4 }, s)).toBe(true)
+  })
+
+  it('always opens the daily challenge and review', () => {
+    expect(playAllowed({ mode: 'daily' }, freshState())).toBe(true)
+    expect(playAllowed({ mode: 'review' }, freshState())).toBe(true)
   })
 })
 

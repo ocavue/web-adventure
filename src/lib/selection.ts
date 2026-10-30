@@ -2,7 +2,14 @@ import * as v from 'valibot'
 
 import { banks, lessonQuestions } from './bank.ts'
 import { LESSONS_PER_LEVEL, LEVELS, MODULES, Q_PER_LESSON } from './constants.ts'
-import { mistakes, modStats, nextLesson } from './progress.ts'
+import {
+  lessonUnlocked,
+  levelDone,
+  levelUnlocked,
+  mistakes,
+  modStats,
+  nextLesson,
+} from './progress.ts'
 import { ModuleIdSchema } from './schema.ts'
 import { progress } from './store.ts'
 import type { ModuleId, Question, State } from './types.ts'
@@ -14,7 +21,7 @@ export type Banks = (typeof banks)['value']
 /** Questions in a jump test. */
 const JUMP_SIZE = 10
 /** Questions in a daily challenge. */
-const DAILY_SIZE = 5
+export const DAILY_SIZE = 5
 
 /** The questions of one lesson, in file order. Empty when the bank is not loaded. */
 export function lessonSet(
@@ -83,11 +90,25 @@ export function dailySet(
   return shuffle(favored.length >= DAILY_SIZE ? favored : pool, rnd).slice(0, DAILY_SIZE)
 }
 
+function moduleOf(id: string): ModuleId | undefined {
+  const mod = v.safeParse(ModuleIdSchema, id.split('-')[0])
+  return mod.success ? mod.output : undefined
+}
+
+/** The modules of these question ids, without duplicates. Unknown ids are skipped. */
+export function modulesOf(ids: Iterable<string>): ModuleId[] {
+  const mods = new Set<ModuleId>()
+  for (const id of ids) {
+    const mod = moduleOf(id)
+    if (mod) mods.add(mod)
+  }
+  return [...mods]
+}
+
 /** Finds a question in `b`. */
 export function findQuestion(id: string, b: Banks = banks.value): Question | undefined {
-  const mod = v.safeParse(ModuleIdSchema, id.split('-')[0])
-  if (!mod.success) return undefined
-  return b[mod.output]?.all.find((q) => q.id === id)
+  const mod = moduleOf(id)
+  return mod && b[mod]?.all.find((q) => q.id === id)
 }
 
 /** Up to eight questions the player missed and has not fixed yet. Unknown ids are skipped. */
@@ -146,9 +167,29 @@ export function playHref(req: PlayRequest): string {
   return `/play?${new URLSearchParams(params).toString()}`
 }
 
-/** The question banks to load before a request can start. */
-export function banksFor(req: PlayRequest): ModuleId[] {
-  return req.mode === 'daily' || req.mode === 'review' ? MODULES.map((m) => m.id) : [req.mod]
+/** The question banks to load before a request can start. A review needs only the trails of its mistakes. */
+export function banksFor(req: PlayRequest, s: State = progress.value): ModuleId[] {
+  if (req.mode === 'review') return modulesOf(mistakes(s))
+  if (req.mode === 'daily') return MODULES.map((m) => m.id)
+  return [req.mod]
+}
+
+/**
+ * Whether the trail map offers this request: a lesson must be unlocked, practice needs a finished
+ * level, and a jump test needs a level that is still locked. Daily challenges and reviews are open.
+ */
+export function playAllowed(req: PlayRequest, s: State = progress.value): boolean {
+  switch (req.mode) {
+    case 'lesson':
+      return lessonUnlocked(req.mod, req.level, req.lesson, s)
+    case 'practice':
+      return levelDone(req.mod, req.level, s)
+    case 'jump':
+      return !levelUnlocked(req.mod, req.level, s)
+    case 'daily':
+    case 'review':
+      return true
+  }
 }
 
 /** Picks the questions for a request. */

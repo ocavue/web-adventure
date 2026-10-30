@@ -18,6 +18,7 @@ import {
 import { ModuleIdSchema } from './schema.ts'
 import {
   findQuestion,
+  modulesOf,
   playHref,
   questionsFor,
   type Banks,
@@ -25,7 +26,7 @@ import {
   type SessionKind,
 } from './selection.ts'
 import { progress, updateProgress } from './store.ts'
-import type { Question, Selection, State } from './types.ts'
+import type { ModuleId, Question, Selection, State } from './types.ts'
 import { shuffle, todayStr } from './utils.ts'
 
 /** Correct first tries a jump test needs. */
@@ -33,6 +34,7 @@ const JUMP_PASS = 8
 /** Saved sessions older than this start over. */
 const MAX_AGE_MS = 6 * 60 * 60 * 1000
 const STORAGE_PREFIX = 'byte-trail:session:'
+const RESULT_PREFIX = 'byte-trail:result:'
 
 const int = v.pipe(v.number(), v.integer(), v.minValue(0))
 
@@ -44,11 +46,15 @@ const SelectionSchema = v.union([
   v.null(),
 ])
 
+const KindSchema = v.picklist(['lesson', 'jump', 'practice', 'daily', 'review'])
+
 const SessionMetaSchema = v.object({
   mod: v.optional(ModuleIdSchema),
   level: v.optional(int),
   lesson: v.optional(int),
   replay: v.optional(v.boolean()),
+  /** The day a daily challenge belongs to. */
+  date: v.optional(v.string()),
 })
 
 const SessionItemSchema = v.object({
@@ -67,7 +73,7 @@ const AnswerResultSchema = v.object({
 const LastAnswerSchema = v.object({ ok: v.boolean(), xp: int, caseSlip: v.boolean() })
 
 const SessionStateSchema = v.object({
-  kind: v.picklist(['lesson', 'jump', 'practice', 'daily', 'review']),
+  kind: KindSchema,
   meta: SessionMetaSchema,
   queue: v.pipe(v.array(SessionItemSchema), v.minLength(1)),
   idx: int,
@@ -97,10 +103,34 @@ const SessionStateSchema = v.object({
 
 const SavedSessionSchema = v.object({ savedAt: int, state: SessionStateSchema })
 
+const LessonResultSchema = v.object({
+  kind: KindSchema,
+  meta: SessionMetaSchema,
+  firstOk: int,
+  firstTotal: int,
+  acc: v.pipe(v.number(), v.minValue(0), v.maxValue(1)),
+  secs: int,
+  xp: int,
+  xpBefore: int,
+  bestCombo: int,
+  fixed: int,
+  results: v.array(AnswerResultSchema),
+  newBadges: v.array(v.string()),
+  stars: v.optional(v.pipe(int, v.minValue(1), v.maxValue(3))),
+  firstClear: v.optional(v.boolean()),
+  campCleared: v.optional(int),
+  summit: v.optional(v.boolean()),
+  passed: v.optional(v.boolean()),
+  goalHit: v.optional(v.boolean()),
+  streak: int,
+  freezeEarned: v.boolean(),
+})
+
+const SavedResultSchema = v.object({ savedAt: int, result: LessonResultSchema })
+
 export type SessionMeta = v.InferOutput<typeof SessionMetaSchema>
 /** A question in the session queue. `order` is the shuffled order of its choices. */
 type SessionItem = v.InferOutput<typeof SessionItemSchema>
-type AnswerResult = v.InferOutput<typeof AnswerResultSchema>
 /** The outcome of the last `check()`. */
 export type LastAnswer = v.InferOutput<typeof LastAnswerSchema>
 /** Everything about a running session. Plain JSON, so it can be saved and restored. */
@@ -117,28 +147,8 @@ export interface SessionQuestion {
   missedBefore: boolean
 }
 
-export interface LessonResult {
-  kind: SessionKind
-  meta: SessionMeta
-  firstOk: number
-  firstTotal: number
-  acc: number
-  secs: number
-  xp: number
-  xpBefore: number
-  bestCombo: number
-  fixed: number
-  results: AnswerResult[]
-  newBadges: string[]
-  stars?: number
-  firstClear?: boolean
-  campCleared?: number
-  summit?: boolean
-  passed?: boolean
-  goalHit?: boolean
-  streak: number
-  freezeEarned: boolean
-}
+/** The outcome of a finished session, shown on the results screen. */
+export type LessonResult = v.InferOutput<typeof LessonResultSchema>
 
 export interface Session {
   readonly request: PlayRequest
@@ -227,6 +237,10 @@ function storageKey(href: string): string {
   return STORAGE_PREFIX + href
 }
 
+function resultKey(href: string): string {
+  return RESULT_PREFIX + href
+}
+
 /** Starts a session with these questions, in this order. */
 export function createSession(
   request: PlayRequest,
@@ -244,6 +258,7 @@ export function createSession(
     meta.lesson = request.lesson
     meta.replay = options.replay ?? false
   }
+  if (request.mode === 'daily') meta.date = todayStr()
   const state: SessionState = {
     kind: request.mode,
     meta,
@@ -269,6 +284,8 @@ export function createSession(
     missed0: questions.filter((q) => s.seen[q.id]?.miss).map((q) => q.id),
     status: 'active',
   }
+  // A new session replaces the results of the last one at this URL.
+  removeItem(resultKey(playHref(request)))
   return buildSession(request, state, new Map(questions.map((q) => [q.id, q])))
 }
 
@@ -357,6 +374,7 @@ function buildSession(
     update((d) => {
       d.selection = value
     })
+    save()
   }
 
   const toggleChoice = (ci: number): void => {
@@ -482,7 +500,8 @@ function buildSession(
     const firstTotal = Object.keys(st.firstTry).length
     const firstOk = Object.values(st.firstTry).filter(Boolean).length
     const acc = firstTotal ? firstOk / firstTotal : 0
-    const secs = Math.round((Date.now() - st.started) / 1000)
+    // A clock moved back must not make the play time negative.
+    const secs = Math.max(0, Math.round((Date.now() - st.started) / 1000))
     const res: LessonResult = {
       kind: st.kind,
       meta: st.meta,
@@ -512,7 +531,9 @@ function buildSession(
           addXp(d, 30)
         }
       } else if (request.mode === 'daily') {
-        d.challenges[todayStr()] = firstOk
+        const today = todayStr()
+        // A second try the same day keeps the best score.
+        d.challenges[today] = Math.max(d.challenges[today] ?? 0, firstOk)
         const keys = Object.keys(d.challenges).sort()
         while (keys.length > 30) delete d.challenges[keys.shift() ?? '']
         award(d, 'daily')
@@ -538,6 +559,7 @@ function buildSession(
     state.value = st
     result.value = res
     clearSession(request)
+    saveResult(href, res)
     return res
   }
 
@@ -654,7 +676,7 @@ function finishLesson(
 }
 
 /** Saves a running session to `sessionStorage`, so a reload of its `/play` URL resumes it. */
-export function saveSession(session: Session): void {
+function saveSession(session: Session): void {
   const state = session.state.peek()
   if (state.status !== 'active') return
   try {
@@ -664,21 +686,76 @@ export function saveSession(session: Session): void {
   }
 }
 
-/** Forgets the saved session of a request. */
-function clearSession(request: PlayRequest): void {
+function removeItem(key: string): void {
   try {
-    sessionStorage.removeItem(storageKey(playHref(request)))
+    sessionStorage.removeItem(key)
   } catch {
     // Nothing was saved.
   }
 }
 
-function readSaved(href: string): string | null {
+/** Forgets the saved session of a request. */
+export function clearSession(request: PlayRequest): void {
+  removeItem(storageKey(playHref(request)))
+}
+
+function readItem(key: string): string | null {
   try {
-    return sessionStorage.getItem(storageKey(href))
+    return sessionStorage.getItem(key)
   } catch {
     return null
   }
+}
+
+/** Saves a finished session's result, so a reload or Back / Forward shows it again. */
+function saveResult(href: string, result: LessonResult): void {
+  try {
+    sessionStorage.setItem(resultKey(href), JSON.stringify({ savedAt: Date.now(), result }))
+  } catch {
+    // Storage can be blocked or full. A reload then starts a new session.
+  }
+}
+
+function matchesMeta(kind: SessionKind, meta: SessionMeta, req: PlayRequest): boolean {
+  if (kind !== req.mode) return false
+  if (req.mode === 'lesson' && meta.lesson !== req.lesson) return false
+  if (req.mode === 'lesson' || req.mode === 'jump' || req.mode === 'practice') {
+    return meta.mod === req.mod && meta.level === req.level
+  }
+  return true
+}
+
+function fresh(savedAt: number): boolean {
+  const age = Date.now() - savedAt
+  return age >= 0 && age <= MAX_AGE_MS
+}
+
+/**
+ * The result of the last finished session of a request, saved in this tab. Returns `null`, and
+ * forgets the saved data, when there is none, it is invalid, or it is older than a few hours.
+ */
+export function restoreResult(request: PlayRequest): LessonResult | null {
+  const key = resultKey(playHref(request))
+  const raw = readItem(key)
+  if (raw === null) return null
+  const parsed = v.safeParse(SavedResultSchema, parseJson(raw))
+  if (
+    parsed.success &&
+    fresh(parsed.output.savedAt) &&
+    matchesMeta(parsed.output.result.kind, parsed.output.result.meta, request)
+  ) {
+    return parsed.output.result
+  }
+  removeItem(key)
+  return null
+}
+
+/** The modules of the questions in the saved session of a request, so their banks load first. */
+export function savedModules(request: PlayRequest): ModuleId[] {
+  const raw = readItem(storageKey(playHref(request)))
+  if (raw === null) return []
+  const parsed = v.safeParse(SavedSessionSchema, parseJson(raw))
+  return parsed.success ? modulesOf(parsed.output.state.queue.map((item) => item.id)) : []
 }
 
 function parseJson(raw: string): unknown {
@@ -695,22 +772,13 @@ function validOrder(q: Question, order: number[] | undefined): boolean {
   return new Set(order).size === order.length && order.every((ci) => ci < q.choices.length)
 }
 
-function matchesRequest(st: SessionState, req: PlayRequest): boolean {
-  if (st.kind !== req.mode) return false
-  if (req.mode === 'lesson' && st.meta.lesson !== req.lesson) return false
-  if (req.mode === 'lesson' || req.mode === 'jump' || req.mode === 'practice') {
-    return st.meta.mod === req.mod && st.meta.level === req.level
-  }
-  return true
-}
-
 /**
  * Resumes the saved session of a request. Returns `null`, and forgets the saved data, when there
  * is none, it is invalid or older than a few hours, or its questions are not in the loaded banks.
  */
 export function restoreSession(request: PlayRequest, b: Banks = banks.peek()): Session | null {
   const href = playHref(request)
-  const raw = readSaved(href)
+  const raw = readItem(storageKey(href))
   if (raw === null) return null
   const parsed = v.safeParse(SavedSessionSchema, parseJson(raw))
   const restored = parsed.success ? resume(request, parsed.output, b) : null
@@ -724,10 +792,11 @@ function resume(
   b: Banks,
 ): Session | null {
   const { state, savedAt } = saved
-  const age = Date.now() - savedAt
-  if (age < 0 || age > MAX_AGE_MS) return null
+  if (!fresh(savedAt)) return null
   if (state.status !== 'active' || state.idx >= state.queue.length) return null
-  if (!matchesRequest(state, request)) return null
+  if (!matchesMeta(state.kind, state.meta, request)) return null
+  // A daily challenge from yesterday must not count for today.
+  if (state.kind === 'daily' && state.meta.date !== todayStr()) return null
   const questions = new Map<string, Question>()
   for (const item of state.queue) {
     const q = questions.get(item.id) ?? findQuestion(item.id, b)

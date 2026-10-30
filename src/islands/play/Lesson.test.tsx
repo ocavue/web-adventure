@@ -162,4 +162,13 @@ describe('Lesson', () => {
     await new Promise((resolve) => setTimeout(resolve, 400))
     expect(screen.getAllByText('Badge earned: Century')).toHaveLength(1)
   })
+
+  it('keeps the focus on Continue when an answered question comes back after a reload', async () => {
+    const session = createSession(lesson, [tf(), tf()])
+    session.select(true)
+    session.check()
+    render(<Lesson session={session} onFinish={vi.fn()} onLeave={vi.fn()} />)
+    const next = await screen.findByRole('button', { name: 'Continue' })
+    await waitFor(() => expect(document.activeElement).toBe(next))
+  })
 })

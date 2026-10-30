@@ -1,4 +1,3 @@
-import { effect } from '@preact/signals'
 import * as stylex from '@stylexjs/stylex'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
@@ -19,8 +18,8 @@ import type { LessonResult } from '../../lib/lesson.ts'
 import { dailyXp, rankOf } from '../../lib/progress.ts'
 import { findQuestion } from '../../lib/selection.ts'
 import { sfx } from '../../lib/sound.ts'
-import { progress, progressReady } from '../../lib/store.ts'
-import { applySettings } from '../../lib/theme.ts'
+import { progress } from '../../lib/store.ts'
+import { useApplySettings } from '../../lib/theme.ts'
 import type { State } from '../../lib/types.ts'
 import { fmt } from '../../lib/utils.ts'
 import { focus, layout, surface, text } from '../../styles/shared.ts'
@@ -149,6 +148,10 @@ const styles = stylex.create({
   },
   itemOk: { boxShadow: `inset 4px 0 0 ${colors.good}, inset 0 0 0 1.5px ${colors.line}` },
   itemMiss: { boxShadow: `inset 4px 0 0 ${colors.bad}, inset 0 0 0 1.5px ${colors.line}` },
+  itemHead: { display: 'flex', gap: 8, alignItems: 'flex-start' },
+  itemIcon: { flexShrink: 0, width: 20, height: 20, marginTop: 2 },
+  itemIconOk: { color: colors.good },
+  itemIconMiss: { color: colors.bad },
   itemPrompt: { fontWeight: 700 },
 })
 
@@ -212,8 +215,15 @@ function AnswerList({ result }: { result: LessonResult }) {
         if (!q) return null
         return (
           <div key={id} {...stylex.props(styles.item, ok ? styles.itemOk : styles.itemMiss)}>
-            <div {...stylex.props(styles.itemPrompt)}>
-              <Rich text={q.prompt} />
+            <div {...stylex.props(styles.itemHead)}>
+              <Icon
+                name={ok ? 'check' : 'x'}
+                xstyle={[styles.itemIcon, ok ? styles.itemIconOk : styles.itemIconMiss]}
+              />
+              <div {...stylex.props(styles.itemPrompt)}>
+                <span {...stylex.props(layout.srOnly)}>{ok ? 'Correct: ' : 'Missed: '}</span>
+                <Rich text={q.prompt} />
+              </div>
             </div>
             <div>
               <span {...stylex.props(text.muted)}>Answer:</span> <Rich text={correctText(q)} />
@@ -231,10 +241,12 @@ function AnswerList({ result }: { result: LessonResult }) {
 export interface ResultsProps {
   result: LessonResult
   levels: TrailLevels
+  /** Shown again after a reload or Back / Forward: no confetti or fanfare this time. */
+  restored?: boolean
 }
 
 /** The results screen after a finished session. */
-export function Results({ result: r, levels }: ResultsProps) {
+export function Results({ result: r, levels, restored = false }: ResultsProps) {
   const state = useProgress()
   const [copy] = useState(() => resultCopy(r, progress.peek(), levels))
   const titleRef = useRef<HTMLHeadingElement>(null)
@@ -242,17 +254,14 @@ export function Results({ result: r, levels }: ResultsProps) {
   const m = mod ? MOD[mod] : null
 
   // The top bar's settings dialog can change the theme here, as in the app shell.
-  useEffect(() => {
-    return effect(() => {
-      if (progressReady.value) applySettings(progress.value.settings)
-    })
-  }, [])
+  useApplySettings()
 
   useEffect(() => {
     window.scrollTo({ top: 0 })
     titleRef.current?.focus({ preventScroll: true })
     document.title = `${copy.title} · Byte Trail`
     announce(`${copy.title} ${copy.line}`)
+    if (restored) return
     const power = confettiPower(r)
     const rankUp = rankOf(r.xpBefore).index < rankOf(progress.peek().xp).index
     const fanfare = r.newBadges.length > 0 || !!r.campCleared || !!r.summit || rankUp
@@ -266,7 +275,7 @@ export function Results({ result: r, levels }: ResultsProps) {
       clearTimeout(confettiTimer)
       clearTimeout(soundTimer)
     }
-  }, [r, copy])
+  }, [r, copy, restored])
 
   const newBadges = BADGES.filter((b) => r.newBadges.includes(b.id))
 
@@ -299,10 +308,22 @@ export function Results({ result: r, levels }: ResultsProps) {
               <b {...stylex.props(styles.statValue)}>+{r.xp}</b>
               <span {...stylex.props(styles.statLabel)}>XP earned</span>
             </div>
-            <div {...stylex.props(styles.stat)}>
-              <b {...stylex.props(styles.statValue)}>{Math.round(r.acc * 100)}%</b>
-              <span {...stylex.props(styles.statLabel)}>First try</span>
-            </div>
+            {r.kind === 'jump' ? (
+              <div {...stylex.props(styles.stat)}>
+                <b {...stylex.props(styles.statValue)}>
+                  {r.firstOk}
+                  <span aria-hidden="true">/</span>
+                  <span {...stylex.props(layout.srOnly)}> of </span>
+                  {r.firstTotal}
+                </b>
+                <span {...stylex.props(styles.statLabel)}>Right</span>
+              </div>
+            ) : (
+              <div {...stylex.props(styles.stat)}>
+                <b {...stylex.props(styles.statValue)}>{Math.round(r.acc * 100)}%</b>
+                <span {...stylex.props(styles.statLabel)}>First try</span>
+              </div>
+            )}
             <div {...stylex.props(styles.stat)}>
               <b {...stylex.props(styles.statValue)}>{formatTime(r.secs)}</b>
               <span {...stylex.props(styles.statLabel)}>Time</span>

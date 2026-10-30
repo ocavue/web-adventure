@@ -111,6 +111,7 @@ const styles = stylex.create({
     borderWidth: 0,
     backgroundColor: 'transparent',
     fontSize: 13,
+    // `ink3` is below 4.5:1 on the green and peach docks.
     color: { default: colors.ink2, ':hover': colors.ink },
     textDecoration: 'underline',
     cursor: 'pointer',

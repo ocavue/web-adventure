@@ -8,6 +8,11 @@ const sway = stylex.keyframes({
   '50%': { transform: 'rotate(4deg)' },
 })
 
+const fadeIn = stylex.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+})
+
 const styles = stylex.create({
   loader: {
     position: 'relative',
@@ -19,6 +24,11 @@ const styles = stylex.create({
     gap: 12,
     paddingInline: 16,
     textAlign: 'center',
+    // Most lessons load in a blink. The delay keeps the loader from flashing.
+    animationName: fadeIn,
+    animationDuration: '0.2s',
+    animationDelay: '0.3s',
+    animationFillMode: 'backwards',
   },
   bit: {
     animationName: sway,
