@@ -7,9 +7,6 @@ export default defineESLintConfig(
     markdown: false,
     react: { files: ['**/*.tsx'], reactCompiler: false },
   },
-  {
-    ignores: ['legacy/**'],
-  },
   ...astro.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],

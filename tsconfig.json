@@ -7,5 +7,5 @@
     "types": ["node", "astro/client"]
   },
   "include": [".astro/types.d.ts", "**/*", "src/questions/*.json"],
-  "exclude": ["dist", "legacy", "node_modules"]
+  "exclude": ["dist", "node_modules"]
 }

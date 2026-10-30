@@ -62,7 +62,7 @@ interface CodePalette {
 }
 
 /**
- * Builds a Shiki theme from the legacy Prism palette. Every color has at least
+ * Builds a Shiki theme from the original Prism palette of the site. Every color has at least
  * 4.5:1 contrast on the code background.
  */
 function codeTheme(p: CodePalette): ThemeRegistration {
