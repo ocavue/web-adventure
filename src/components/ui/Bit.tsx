@@ -112,7 +112,7 @@ export function Buddy({
   return (
     <div {...stylex.props(styles.buddy, xstyle)}>
       <Bit {...bit} />
-      <div {...stylex.props(surface.panel, styles.bubble)}>{children}</div>
+      <div {...stylex.props(surface.panel, surface.raised, styles.bubble)}>{children}</div>
     </div>
   )
 }

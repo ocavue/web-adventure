@@ -12,6 +12,7 @@ const styles = stylex.create({
   bar: { fill: colors.ink3 },
   met: { fill: colors.good },
   label: { fill: colors.ink2 },
+  today: { fill: colors.ink, fontWeight: 700 },
   caption: { marginTop: 4 },
 })
 
@@ -21,8 +22,13 @@ const BAR = 24
 const BASE = 100
 const TALL = 80
 
-function weekday(date: string, style: 'narrow' | 'long'): string {
+function weekday(date: string, style: 'short' | 'long'): string {
   return new Date(date + 'T12:00:00').toLocaleDateString('en-US', { weekday: style })
+}
+
+/** Two letters (`Mo`, `Tu`, ...): one letter makes Tuesday and Thursday look the same. */
+function dayLabel(date: string): string {
+  return weekday(date, 'short').slice(0, 2)
 }
 
 export interface WeekChartProps {
@@ -55,13 +61,13 @@ export function WeekChart({ days, goal }: WeekChartProps) {
               />
               {d.date && (
                 <text
-                  {...stylex.props(styles.label)}
+                  {...stylex.props(styles.label, i === list.length - 1 && styles.today)}
                   x={cx}
                   y="116"
                   text-anchor="middle"
                   font-size="11"
                 >
-                  {weekday(d.date, 'narrow')}
+                  {dayLabel(d.date)}
                 </text>
               )}
               {d.xp > 0 && (
