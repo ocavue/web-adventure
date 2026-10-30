@@ -3,8 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { banks } from './bank.ts'
 import {
   createSession,
+  restoreResult,
   restoreSession,
-  saveSession,
+  savedModules,
   sessionTitle,
   startSession,
   type Session,
@@ -538,6 +539,16 @@ describe('daily challenges', () => {
     expect(progress.value.challenges).not.toHaveProperty('2026-09-01')
     expect(s.result.value?.newBadges).toContain('daily')
   })
+
+  it('keeps the best score of the day', () => {
+    const qs = many(3)
+    play(createSession({ mode: 'daily' }, qs), [true, true, false])
+    expect(progress.value.challenges['2026-10-30']).toBe(2)
+    play(createSession({ mode: 'daily' }, qs), [false, false, true])
+    expect(progress.value.challenges['2026-10-30']).toBe(2)
+    play(createSession({ mode: 'daily' }, qs), [true, true, true])
+    expect(progress.value.challenges['2026-10-30']).toBe(3)
+  })
 })
 
 describe('review', () => {
@@ -670,6 +681,14 @@ describe('session lifecycle', () => {
     expect(progress.value.stats.time).toBe(42)
   })
 
+  it('never counts negative time when the clock moves back', () => {
+    const s = createSession(lessonReq(), many(1))
+    vi.setSystemTime(Date.now() - 60_000)
+    play(s)
+    expect(s.result.value?.secs).toBe(0)
+    expect(progress.value.stats.time).toBe(0)
+  })
+
   it('returns badges earned before quitting, and keeps the progress', () => {
     const s = createSession(lessonReq(), many(8))
     answerAll(s, [true, true, true, true, true])
@@ -718,15 +737,13 @@ describe('saving and restoring', () => {
     return { session, qs }
   }
 
-  it('resumes a session after a reload', () => {
+  it('resumes a session after a reload, with the picked but unchecked answer', () => {
     const { session } = started()
-    session.select(true)
+    session.toggleChoice(1)
     const restored = restoreSession(req)
-    expect(restored?.state.value).toEqual({ ...session.state.value, selection: null })
+    expect(restored?.state.value).toEqual(session.state.value)
+    expect(restored?.state.value.selection).toEqual([1])
     expect(restored?.current.value).toEqual(session.current.value)
-    // Saving keeps the selection too.
-    saveSession(session)
-    expect(restoreSession(req)?.state.value).toEqual(session.state.value)
     if (!restored) return
     play(restored)
     expect(restored.result.value?.firstTotal).toBe(4)
@@ -790,6 +807,55 @@ describe('saving and restoring', () => {
     }
     sessionStorage.setItem(key, good)
     expect(restoreSession(req)).not.toBeNull()
+  })
+
+  it('does not resume a daily challenge from yesterday', () => {
+    const qs = many(3)
+    useBank(qs)
+    vi.setSystemTime(day(29, 23))
+    const s = createSession({ mode: 'daily' }, qs)
+    answer(s, true)
+    expect(restoreSession({ mode: 'daily' })).not.toBeNull()
+    vi.setSystemTime(day(30, 0))
+    expect(restoreSession({ mode: 'daily' })).toBeNull()
+  })
+
+  it('lists the modules of a saved session, so their banks load first', () => {
+    const qs = [tf('css'), tf('git'), tf('css')]
+    useBank(qs)
+    answer(createSession({ mode: 'review' }, qs), true)
+    expect(savedModules({ mode: 'review' })).toEqual(['css', 'git'])
+    expect(savedModules({ mode: 'daily' })).toEqual([])
+  })
+
+  it('keeps the result of a finished session until a new session starts', () => {
+    const { session } = started()
+    play(session)
+    const result = session.result.value
+    expect(restoreResult(req)).toEqual(result)
+    expect(restoreResult(lessonReq('html', 1, 1))).toBeNull()
+    createSession(req, many(1))
+    expect(restoreResult(req)).toBeNull()
+  })
+
+  it('discards an old or corrupt result', () => {
+    const { session } = started()
+    play(session)
+    const key = 'byte-trail:result:' + session.href
+    const good = sessionStorage.getItem(key) ?? ''
+    const parsed = JSON.parse(good) as { savedAt: number; result: { kind: string } }
+    for (const raw of [
+      'not json',
+      JSON.stringify({ ...parsed, result: { ...parsed.result, kind: 'daily' } }),
+      JSON.stringify({ ...parsed, result: { ...parsed.result, acc: 2 } }),
+    ]) {
+      sessionStorage.setItem(key, raw)
+      expect(restoreResult(req)).toBeNull()
+      expect(sessionStorage.getItem(key)).toBeNull()
+    }
+    sessionStorage.setItem(key, good)
+    vi.setSystemTime(Date.now() + 7 * 60 * 60 * 1000)
+    expect(restoreResult(req)).toBeNull()
   })
 
   it('works without storage', () => {
