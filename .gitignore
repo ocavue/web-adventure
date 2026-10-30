@@ -13,3 +13,4 @@ temp
 playwright-report
 test-results
 .astro
+.vitest
