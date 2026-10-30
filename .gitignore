@@ -12,3 +12,4 @@ temp
 .eslintcache
 playwright-report
 test-results
+.astro

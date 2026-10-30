@@ -1,6 +1,11 @@
 {
   "extends": "@ocavue/tsconfig/dom/app.json",
   "compilerOptions": {
-    "erasableSyntaxOnly": true
-  }
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "erasableSyntaxOnly": true,
+    "types": ["node", "astro/client"]
+  },
+  "include": [".astro/types.d.ts", "**/*", "src/questions/*.json"],
+  "exclude": ["dist", "legacy", "node_modules"]
 }

@@ -1,0 +1,88 @@
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
+
+/* Declared first, so every StyleX layer wins over these base rules. */
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body,
+  h1,
+  h2,
+  h3,
+  p,
+  ul,
+  figure {
+    margin: 0;
+  }
+
+  ul {
+    padding: 0;
+  }
+
+  button,
+  input {
+    font: inherit;
+    color: inherit;
+  }
+
+  svg {
+    display: block;
+  }
+
+  code,
+  pre,
+  input {
+    font-variant-ligatures: none;
+    font-feature-settings:
+      'liga' 0,
+      'calt' 0;
+  }
+
+  /* Code highlighted at build time by Shiki, with light and dark colors. */
+  .shiki span {
+    color: var(--shiki-light);
+  }
+
+  :root[data-theme='dark'] .shiki span {
+    color: var(--shiki-dark);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) .shiki span {
+      color: var(--shiki-dark);
+    }
+  }
+
+  @view-transition {
+    navigation: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  :root[data-calm] *,
+  :root[data-calm] *::before,
+  :root[data-calm] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

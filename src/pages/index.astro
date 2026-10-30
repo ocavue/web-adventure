@@ -1,0 +1,10 @@
+---
+import { Counter } from '../components/Counter.tsx'
+import { Buddy } from '../components/ui/Bit.tsx'
+import Base from '../layouts/Base.astro'
+---
+
+<Base title="Byte Trail" description="Learn web dev one small step at a time.">
+  <Buddy>Hello from a static Buddy</Buddy>
+  <Counter client:load label="Count" />
+</Base>

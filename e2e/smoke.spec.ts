@@ -1,8 +1,8 @@
 import { expect, test } from '@playwright/test'
 import type { Page } from '@playwright/test'
 
+import type { BankFile } from '../src/lib/types.ts'
 import html from '../src/questions/html.json' with { type: 'json' }
-import type { BankFile } from '../src/types.ts'
 
 const bank = html as BankFile
 

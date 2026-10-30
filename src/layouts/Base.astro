@@ -1,0 +1,69 @@
+---
+import '../styles/global.css'
+
+import * as stylex from '@stylexjs/stylex'
+
+import { STORE_KEY } from '../lib/store.ts'
+import { THEME_CLASSES } from '../lib/theme.ts'
+import type { ModuleId } from '../lib/types.ts'
+import { moduleThemes } from '../styles/themes.ts'
+import { styles } from './base.styles.ts'
+
+interface Props {
+  /** The page title, without the site name. */
+  title: string
+  description: string
+  /** The accent color of a trail page. */
+  mod?: ModuleId
+  /** Pages that only make sense with local progress are not indexed. */
+  noindex?: boolean
+  /** Structured data for search engines. */
+  jsonLd?: Record<string, unknown>
+}
+
+const { title, description, mod, noindex = false, jsonLd } = Astro.props
+const fullTitle = title === 'Byte Trail' ? title : `${title} · Byte Trail`
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const ogImage = new URL('/og.png', Astro.site)
+
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#eef4f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d191d" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Byte Trail" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <script is:inline define:vars={{ key: STORE_KEY, classes: THEME_CLASSES }}>
+      // Applies the saved theme before the first paint, so the page does not flash.
+      try {
+        const settings = JSON.parse(localStorage.getItem(key) ?? '{}').settings ?? {}
+        const root = document.documentElement
+        if (settings.theme === 'light' || settings.theme === 'dark') {
+          root.classList.add(...classes[settings.theme].split(' '))
+          root.dataset.theme = settings.theme
+        }
+        if (settings.calm) root.dataset.calm = ''
+      } catch {}
+    </script>
+  </head>
+  <body {...stylex.attrs(styles.body, mod && moduleThemes[mod])}>
+    <div {...stylex.attrs(styles.contours)} aria-hidden="true"></div>
+    <slot />
+  </body>
+</html>
