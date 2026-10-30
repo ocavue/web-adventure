@@ -107,4 +107,20 @@ describe('Results', () => {
     expect(screen.getAllByText('Missed:')).toHaveLength(1)
     banks.value = {}
   })
+
+  it('counts only review cards whose questions still exist after a daily challenge', () => {
+    const all = html.questions.map((q) => ({ ...q, module: 'html' }) as Question)
+    banks.value = { html: { all, byLevel: [all] } }
+    replaceProgress({
+      ...freshState(),
+      seen: {
+        [all[0].id]: { c: 0, w: 1, miss: true },
+        'html-gone-1': { c: 0, w: 1, miss: true },
+      },
+    })
+    const r = result({ kind: 'daily', meta: {}, firstOk: 3, firstTotal: 5, acc: 0.6 })
+    render(<Results result={r} levels={levels} />)
+    expect(screen.getByText(/you have 1 review card waiting/)).toBeTruthy()
+    banks.value = {}
+  })
 })

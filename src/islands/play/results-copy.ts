@@ -3,7 +3,7 @@ import type { IconName } from '../../components/ui/icons.ts'
 import { CAMP_NAMES, ELEVATIONS, MOD, type ModuleInfo } from '../../lib/constants.ts'
 import type { LessonResult } from '../../lib/lesson.ts'
 import { lastPlayed, mistakes, nextLesson } from '../../lib/progress.ts'
-import { playHref } from '../../lib/selection.ts'
+import { findQuestion, playHref } from '../../lib/selection.ts'
 import type { State } from '../../lib/types.ts'
 import { fmt } from '../../lib/utils.ts'
 
@@ -104,7 +104,8 @@ function jumpCopy(r: LessonResult, m: ModuleInfo): ResultCopy {
 }
 
 function dailyCopy(r: LessonResult, s: State): ResultCopy {
-  const mis = mistakes(s).length
+  // Ids that left the banks can never come back in a review, so they do not count.
+  const mis = mistakes(s).filter((id) => findQuestion(id)).length
   const last = lastPlayed(s)
   const nl = last && nextLesson(last, s)
   return {
