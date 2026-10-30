@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
-import { useState } from 'preact/hooks'
+import { useMemo, useState } from 'preact/hooks'
 
 import { Buddy } from '../../components/ui/Bit.tsx'
 import { Blaze } from '../../components/ui/Blaze.tsx'
@@ -10,10 +10,9 @@ import { Medal } from '../../components/ui/Medal.tsx'
 import { Panel } from '../../components/ui/Panel.tsx'
 import { ProgressBar } from '../../components/ui/ProgressBar.tsx'
 import { BUDDY_LINES, LESSONS_PER_LEVEL, MOD } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
 import { mistakes, rankOf } from '../../lib/progress.ts'
 import { playHref } from '../../lib/selection.ts'
-import { progressReady } from '../../lib/store.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { fmt, pick, todayStr } from '../../lib/utils.ts'
 import { surface, text } from '../../styles/shared.ts'
@@ -89,19 +88,22 @@ const styles = stylex.create({
 export interface HomeHeroProps {
   /** Level titles of every trail, from the question banks. */
   titles: Record<ModuleId, string[]>
+  /** Every question id in the banks, joined by spaces. Missed questions that are gone do not count. */
+  questionIds: string
 }
 
 /** The top of the home page: greeting, Bit, the next lesson, the daily challenge, rank, and review. */
-export function HomeHero({ titles }: HomeHeroProps) {
-  const state = useProgress()
+export function HomeHero({ titles, questionIds }: HomeHeroProps) {
+  const { state, ready, pending } = useProgressState()
+  const ids = useMemo(() => new Set(questionIds.split(' ')), [questionIds])
   // Picked once per page view, so the tip does not change on every render.
   const [tip] = useState(() => pick(BUDDY_LINES))
   const started = hasStarted(state)
   // The hour is only known in the browser. Until the stored progress loads, the page matches the
   // server-rendered HTML, which says a neutral hello.
-  const hello = progressReady.value ? greeting() : 'Hello'
+  const hello = ready ? greeting() : 'Hello'
   return (
-    <section {...stylex.props(styles.hero)}>
+    <section {...pending} {...stylex.props(styles.hero)}>
       <div {...stylex.props(styles.main)}>
         <div>
           <p {...stylex.props(text.eyebrow)}>
@@ -117,7 +119,7 @@ export function HomeHero({ titles }: HomeHeroProps) {
       <div {...stylex.props(styles.side)}>
         <DailyCard state={state} started={started} />
         {started ? <RankCard state={state} /> : <HowItWorks />}
-        <ReviewCard state={state} />
+        <ReviewCard count={mistakes(state).filter((id) => ids.has(id)).length} />
       </div>
     </section>
   )
@@ -249,8 +251,7 @@ function HowItWorks() {
   )
 }
 
-function ReviewCard({ state }: { state: State }) {
-  const count = mistakes(state).length
+function ReviewCard({ count }: { count: number }) {
   if (count === 0) return null
   return (
     <Panel as="section" labelledBy="review-title">

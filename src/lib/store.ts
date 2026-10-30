@@ -5,6 +5,8 @@ import { StateSchema } from './schema.ts'
 import type { State } from './types.ts'
 
 export const STORE_KEY = 'byte-trail:v1'
+/** Where a stored value that cannot be read is kept, so the next save does not lose it silently. */
+export const CORRUPT_KEY = 'byte-trail:v1:corrupt'
 
 export function freshState(): State {
   return v.parse(StateSchema, { v: 1 })
@@ -80,7 +82,10 @@ export const progressReady = signal(false)
 function readLocal(): State {
   try {
     const raw = localStorage.getItem(STORE_KEY)
-    if (raw) return parseState(raw) ?? freshState()
+    if (!raw) return freshState()
+    const state = parseState(raw)
+    if (state) return state
+    localStorage.setItem(CORRUPT_KEY, raw)
   } catch {
     // Storage can be blocked, for example in some private windows.
   }
@@ -106,6 +111,11 @@ export function loadProgress(): void {
     if (e.key !== STORE_KEY || !e.newValue) return
     const next = parseState(e.newValue)
     if (next) progress.value = next
+  })
+  // A page restored from the back/forward cache keeps its old signal. Another page may have saved
+  // newer progress since, and the next save here must not overwrite it.
+  addEventListener('pageshow', (e) => {
+    if (e.persisted) progress.value = readLocal()
   })
 }
 

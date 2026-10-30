@@ -11,6 +11,17 @@ export const styles = stylex.create({
     lineHeight: 1.5,
     minHeight: '100vh',
   },
+  // With `viewport-fit=cover`, content would scroll visibly under the status bar of a notched phone.
+  safeArea: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 'env(safe-area-inset-top, 0px)',
+    backgroundColor: colors.paper,
+    zIndex: 30,
+    pointerEvents: 'none',
+  },
   contours: {
     position: 'fixed',
     inset: 0,

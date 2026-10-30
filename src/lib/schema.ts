@@ -88,28 +88,88 @@ export const BankFileSchema = v.object({
   questions: v.array(QuestionSchema),
 })
 
-const count = v.optional(v.pipe(v.number(), v.minValue(0)), 0)
-const numberMap = v.optional(v.record(v.string(), v.number()), {})
-const day = v.optional(v.string(), '')
+// Stored progress is forgiving field by field: one bad value must never cost the player the rest.
+// Each field falls back to its default, and records drop only their invalid entries.
 
-/** Player progress as stored in `localStorage` and in backup files. Missing fields get defaults. */
+/** A finite number, or a numeric string such as `"80"`. */
+const num = v.union([
+  v.pipe(v.number(), v.finite()),
+  v.pipe(v.string(), v.trim(), v.decimal(), v.transform(Number)),
+])
+const nonNegative = v.pipe(
+  num,
+  v.transform((n) => Math.max(0, n)),
+)
+const count = v.fallback(nonNegative, 0)
+const day = v.fallback(v.string(), '')
+
+/** A record that keeps the entries that match `item` and drops the others. */
+function entries<T extends v.GenericSchema>(item: T) {
+  return v.fallback(
+    v.pipe(
+      v.record(v.string(), v.unknown()),
+      v.transform((input) => {
+        const out: Record<string, v.InferOutput<T>> = {}
+        for (const [key, value] of Object.entries(input)) {
+          const result = v.safeParse(item, value)
+          if (result.success) out[key] = result.output
+        }
+        return out
+      }),
+    ),
+    () => ({}),
+  )
+}
+
+const numberMap = entries(nonNegative)
+
+/** Like `v.optional(schema)`, but an invalid value such as `null` also becomes `undefined`. */
+function maybe<T extends v.GenericSchema>(schema: T) {
+  return v.fallback(v.optional(schema), undefined)
+}
+
+const ThemeSchema = v.union([
+  v.picklist(['system', 'light', 'dark']),
+  // An older name of `system`.
+  v.pipe(
+    v.literal('auto'),
+    v.transform(() => 'system' as const),
+  ),
+])
+
+/** Player progress as stored in `localStorage` and in backup files. Missing or invalid fields get defaults. */
 export const StateSchema = v.object({
   v: v.literal(1),
-  name: v.optional(v.pipe(v.string(), v.maxLength(24)), ''),
-  onboarded: v.optional(v.boolean(), false),
-  xp: count,
-  goal: v.optional(v.number(), 80),
-  streak: v.optional(v.object({ count, best: count, last: day }), { count: 0, best: 0, last: '' }),
-  daily: v.optional(v.object({ date: day, xp: count }), { date: '', xp: 0 }),
-  week: numberMap,
-  lessons: v.optional(v.record(v.string(), v.object({ stars: v.number(), at: count })), {}),
-  jumps: numberMap,
-  seen: v.optional(
-    v.record(v.string(), v.object({ c: count, w: count, miss: v.optional(v.boolean()) })),
-    {},
+  name: v.fallback(
+    v.pipe(
+      v.string(),
+      v.transform((s) => s.slice(0, 24)),
+    ),
+    '',
   ),
+  onboarded: v.fallback(v.boolean(), false),
+  xp: count,
+  goal: v.fallback(v.pipe(num, v.minValue(1)), 80),
+  streak: v.fallback(v.object({ count, best: count, last: day }), () => ({
+    count: 0,
+    best: 0,
+    last: '',
+  })),
+  daily: v.fallback(v.object({ date: day, xp: count }), () => ({ date: '', xp: 0 })),
+  week: numberMap,
+  lessons: entries(
+    v.object({
+      stars: v.pipe(
+        num,
+        v.transform((n) => Math.min(3, Math.max(0, n))),
+      ),
+      at: count,
+    }),
+  ),
+  jumps: numberMap,
+  seen: entries(v.object({ c: count, w: count, miss: maybe(v.boolean()) })),
   badges: numberMap,
-  stats: v.optional(
+  stats: v.fallback(
     v.object({
       answered: count,
       correct: count,
@@ -119,21 +179,29 @@ export const StateSchema = v.object({
       hints: count,
       time: count,
     }),
-    { answered: 0, correct: 0, bestCombo: 0, lessons: 0, reviewCleared: 0, hints: 0, time: 0 },
+    () => ({
+      answered: 0,
+      correct: 0,
+      bestCombo: 0,
+      lessons: 0,
+      reviewCleared: 0,
+      hints: 0,
+      time: 0,
+    }),
   ),
   challenges: numberMap,
-  settings: v.optional(
+  settings: v.fallback(
     v.object({
-      sound: v.optional(v.boolean(), true),
-      calm: v.optional(v.boolean(), false),
-      theme: v.optional(v.picklist(['system', 'light', 'dark']), 'system'),
+      sound: v.fallback(v.boolean(), true),
+      calm: v.fallback(v.boolean(), false),
+      theme: v.fallback(ThemeSchema, 'system'),
     }),
-    { sound: true, calm: false, theme: 'system' },
+    () => ({ sound: true, calm: false, theme: 'system' as const }),
   ),
   updatedAt: count,
-  freezes: v.optional(v.number()),
-  usedFreeze: v.optional(v.string()),
-  freezeEarned: v.optional(v.string()),
-  dailySeen: v.optional(v.object({ date: v.string(), ids: v.array(v.string()) })),
-  dayLessons: v.optional(v.object({ date: v.string(), n: v.number() })),
+  freezes: maybe(nonNegative),
+  usedFreeze: maybe(v.string()),
+  freezeEarned: maybe(v.string()),
+  dailySeen: maybe(v.object({ date: v.string(), ids: v.array(v.string()) })),
+  dayLessons: maybe(v.object({ date: v.string(), n: nonNegative })),
 })

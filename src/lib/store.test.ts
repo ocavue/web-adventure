@@ -1,6 +1,20 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { combineStates, freshState, parseState } from './store.ts'
+import {
+  combineStates,
+  CORRUPT_KEY,
+  freshState,
+  loadProgress,
+  parseState,
+  progress,
+  progressReady,
+  STORE_KEY,
+  updateProgress,
+} from './store.ts'
+
+function parse(data: Record<string, unknown>) {
+  return parseState(JSON.stringify({ v: 1, ...data }))
+}
 
 describe('combineStates', () => {
   it('keeps everything earned in either state', () => {
@@ -54,6 +68,129 @@ describe('parseState', () => {
   it('rejects files that are not a progress backup', () => {
     expect(parseState('not json')).toBeNull()
     expect(parseState('[]')).toBeNull()
+    expect(parseState('null')).toBeNull()
     expect(parseState(JSON.stringify({ xp: 10 }))).toBeNull()
+    expect(parseState(JSON.stringify({ v: 2, xp: 10 }))).toBeNull()
+  })
+
+  it('keeps the other fields when one field is invalid', () => {
+    const s = parse({ xp: 'lots', lessons: { 'html:1:0': { stars: 3, at: 5 } }, onboarded: 1 })
+    expect(s?.xp).toBe(0)
+    expect(s?.onboarded).toBe(false)
+    expect(s?.lessons).toEqual({ 'html:1:0': { stars: 3, at: 5 } })
+  })
+
+  it('drops only the invalid entries of a record', () => {
+    const s = parse({
+      lessons: { 'html:1:0': { stars: 2, at: 1 }, 'html:1:1': { stars: 'x' }, 'html:1:2': null },
+      seen: { 'html-001': { c: 1, w: 2, miss: true }, 'html-002': 'oops' },
+      badges: { first: 10, bad: 'x' },
+      week: { '2026-10-30': 40, '2026-10-29': null },
+    })
+    expect(s?.lessons).toEqual({ 'html:1:0': { stars: 2, at: 1 } })
+    expect(s?.seen).toEqual({ 'html-001': { c: 1, w: 2, miss: true } })
+    expect(s?.badges).toEqual({ first: 10 })
+    expect(s?.week).toEqual({ '2026-10-30': 40 })
+  })
+
+  it('replaces records and objects of the wrong type with defaults', () => {
+    const s = parse({
+      lessons: 'none',
+      streak: 7,
+      settings: [],
+      stats: { answered: 'x', correct: 4 },
+    })
+    expect(s?.lessons).toEqual({})
+    expect(s?.streak).toEqual({ count: 0, best: 0, last: '' })
+    expect(s?.settings).toEqual({ sound: true, calm: false, theme: 'system' })
+    expect(s?.stats.answered).toBe(0)
+    expect(s?.stats.correct).toBe(4)
+  })
+
+  it('truncates a long name', () => {
+    expect(parse({ name: 'A'.repeat(30) })?.name).toBe('A'.repeat(24))
+  })
+
+  it('clamps negative counters to 0', () => {
+    const s = parse({ xp: -5, streak: { count: -1, best: 3, last: '2026-10-30' }, freezes: -2 })
+    expect(s?.xp).toBe(0)
+    expect(s?.streak).toEqual({ count: 0, best: 3, last: '2026-10-30' })
+    expect(s?.freezes).toBe(0)
+  })
+
+  it('turns null optional fields into undefined', () => {
+    const s = parse({ freezes: null, usedFreeze: null, dailySeen: null })
+    expect(s?.freezes).toBeUndefined()
+    expect(s?.usedFreeze).toBeUndefined()
+    expect(s?.dailySeen).toBeUndefined()
+  })
+
+  it('reads the old `auto` theme as `system`', () => {
+    expect(parse({ settings: { theme: 'auto', sound: false } })?.settings).toEqual({
+      sound: false,
+      calm: false,
+      theme: 'system',
+    })
+    expect(parse({ settings: { theme: 'neon' } })?.settings.theme).toBe('system')
+  })
+
+  it('accepts numeric strings and falls back for other values', () => {
+    expect(parse({ goal: '80' })?.goal).toBe(80)
+    expect(parse({ goal: '120', xp: '42' })?.xp).toBe(42)
+    expect(parse({ goal: 'big' })?.goal).toBe(80)
+    expect(parse({ goal: 0 })?.goal).toBe(80)
+  })
+
+  it('gives every fresh state its own records', () => {
+    const a = freshState()
+    a.lessons['html:1:0'] = { stars: 1, at: 1 }
+    expect(freshState().lessons).toEqual({})
+  })
+})
+
+describe('loadProgress', () => {
+  let items: Map<string, string>
+  let window: EventTarget
+
+  beforeEach(() => {
+    items = new Map()
+    window = new EventTarget()
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => items.get(key) ?? null,
+      setItem: (key: string, value: string) => items.set(key, value),
+    })
+    vi.stubGlobal('addEventListener', window.addEventListener.bind(window))
+    progress.value = freshState()
+    progressReady.value = false
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('keeps a copy of stored progress that it cannot read', () => {
+    items.set(STORE_KEY, '{"v":1,"xp":')
+    loadProgress()
+    updateProgress((d) => {
+      d.xp = 10
+    })
+    expect(items.get(CORRUPT_KEY)).toBe('{"v":1,"xp":')
+    expect(parseState(items.get(STORE_KEY) ?? '')?.xp).toBe(10)
+  })
+
+  it('reads the storage again when the page comes back from the back/forward cache', () => {
+    const stored = freshState()
+    stored.xp = 10
+    items.set(STORE_KEY, JSON.stringify(stored))
+    loadProgress()
+    expect(progress.value.xp).toBe(10)
+
+    // Another page saves more progress while this one sits in the cache.
+    stored.xp = 50
+    items.set(STORE_KEY, JSON.stringify(stored))
+    window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: false }))
+    expect(progress.value.xp).toBe(10)
+    window.dispatchEvent(Object.assign(new Event('pageshow'), { persisted: true }))
+    expect(progress.value.xp).toBe(50)
   })
 })

@@ -34,7 +34,7 @@ src/
 ### Astro and islands
 
 - Static content (headings, descriptions, level lists) stays in `.astro` files so it is in the HTML for search engines.
-- Anything that depends on the player's progress is an island. Islands render on the server with a fresh progress state, then `useProgress()` (`src/lib/hooks.ts`) loads the stored state after hydration. Never read `localStorage` during render.
+- Anything that depends on the player's progress is an island. Islands render on the server with a fresh progress state, then `useProgressState()` (`src/lib/hooks.ts`) loads the stored state after hydration. Never read `localStorage` during render.
 - Pass build-time data (level titles, question counts) to islands as props. Islands load full question banks with `loadBank()` from `src/lib/bank.ts` only when they need questions.
 - Navigation is plain links between pages (`<a href>`). There is no client router.
 - Lessons run at `/play?mode=lesson&mod=js&level=1&lesson=0`. Other modes: `jump` (`mod`, `level`), `practice` (`mod`, `level`), `daily`, `review`.
@@ -56,8 +56,10 @@ src/
 ### State
 
 - `progress` (`src/lib/store.ts`) is the single source of truth for saved progress. Change it only through `updateProgress((draft) => { ... })` or `replaceProgress(next)`. Both save to `localStorage`.
-- Read progress in components through `useProgress()`, so they re-render when it changes.
-- Helpers in `src/lib/progress.ts` read the current progress by default and accept a state argument.
+- Islands that render on the server read progress only through `useProgressState()`, which returns `{ state, ready, pending }`. Each component gets the fresh state until its own mount effect runs, so its hydration render matches the server HTML even when another island loaded the stored progress first. Never read `progress.value` or `progressReady` during render there. `useProgress()` is only for `client:only` islands (the lesson page).
+- Helpers in `src/lib/progress.ts` read the current progress by default. In islands, always pass the hook's `state` as the last argument.
+- The inline script in `Base.astro` sets `data-returning` on `<html>` when progress is stored. Spread `pending` on every element that shows progress: a rule in `global.css` hides `[data-pending]` for returning players until the island is ready, so they never see new-player content.
+- `StateSchema` is forgiving per field: invalid values fall back to defaults, records drop only bad entries. Unreadable stored data is copied to `byte-trail:v1:corrupt` before the next save.
 - Mutating helpers (`addXp`, `touchStreak`) take the draft as their first argument.
 
 ### Data

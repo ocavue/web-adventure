@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex'
 
 import { AppShell } from '../islands/shell/AppShell.tsx'
 import { STORE_KEY } from '../lib/store.ts'
-import { THEME_CLASSES } from '../lib/theme.ts'
+import { THEME_CLASSES, THEME_COLORS } from '../lib/theme.ts'
 import type { ModuleId } from '../lib/types.ts'
 import { moduleThemes } from '../styles/themes.ts'
 
@@ -41,8 +41,8 @@ const ogImage = new URL('/og.png', Astro.site)
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#eef4f1" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0d191d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content={THEME_COLORS.light} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={THEME_COLORS.dark} media="(prefers-color-scheme: dark)" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Byte Trail" />
     <meta property="og:title" content={fullTitle} />
@@ -57,17 +57,30 @@ const ogImage = new URL('/og.png', Astro.site)
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {/* Inline, because the opt-in must be known before the new page renders. In the external
+    stylesheet it arrived too late, and Chromium aborted the navigation transition. */}
+    <style is:inline>
+      @view-transition {
+        navigation: auto;
+      }
+    </style>
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
-    <script is:inline define:vars={{ key: STORE_KEY, classes: THEME_CLASSES }}>
-      // Applies the saved theme before the first paint, so the page does not flash.
+    <script is:inline define:vars={{ key: STORE_KEY, classes: THEME_CLASSES, colors: THEME_COLORS }}>
+      // Runs before the first paint, so the page does not flash: applies the saved theme, and marks a
+      // returning player, whose progress-dependent content stays hidden until its island is ready.
       try {
-        const settings = JSON.parse(localStorage.getItem(key) ?? '{}').settings ?? {}
+        const saved = JSON.parse(localStorage.getItem(key) ?? '{}') ?? {}
+        const settings = saved.settings ?? {}
         const root = document.documentElement
         if (settings.theme === 'light' || settings.theme === 'dark') {
           root.classList.add(...classes[settings.theme].split(' '))
           root.dataset.theme = settings.theme
+          for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+            meta.content = colors[settings.theme]
+          }
         }
         if (settings.calm) root.dataset.calm = ''
+        if (saved.onboarded || saved.xp > 0) root.dataset.returning = ''
       } catch {}
     </script>
     {
@@ -82,6 +95,7 @@ const ogImage = new URL('/og.png', Astro.site)
   </head>
   <body {...stylex.attrs(styles.body, mod && moduleThemes[mod])}>
     <div {...stylex.attrs(styles.contours)} aria-hidden="true"></div>
+    <div {...stylex.attrs(styles.safeArea)} aria-hidden="true"></div>
     {topbar && <AppShell client:load />}
     <slot />
   </body>

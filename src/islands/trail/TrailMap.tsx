@@ -8,10 +8,9 @@ import { Dialog, DialogActions } from '../../components/ui/Dialog.tsx'
 import { Icon } from '../../components/ui/Icon.tsx'
 import { Stars } from '../../components/ui/Stars.tsx'
 import { CAMP_NAMES, ELEVATIONS, MOD } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
 import { modStats } from '../../lib/progress.ts'
 import { playHref } from '../../lib/selection.ts'
-import { progressReady } from '../../lib/store.ts'
 import { reducedMotion } from '../../lib/theme.ts'
 import { toast } from '../../lib/toast.ts'
 import type { LevelInfo, ModuleId, State } from '../../lib/types.ts'
@@ -194,24 +193,26 @@ export interface TrailMapProps {
 
 /** The trail map: 5 camps of 3 lessons each, joined by a winding line, up to the summit. */
 export function TrailMap({ mod, levels }: TrailMapProps) {
-  const state = useProgress()
+  const { state, ready, pending } = useProgressState()
   const [jumpLevel, setJumpLevel] = useState<number | null>(null)
   const m = MOD[mod]
   const st = modStats(mod, state)
   const complete = st.done === st.total
   const mapRef = useRef<HTMLDivElement>(null)
 
-  useScrollToCurrent(mapRef, state, st.done > 0)
+  useScrollToCurrent(mapRef, state, ready, st.done > 0)
 
   return (
     <>
       {st.done === 0 && !Object.hasOwn(state.jumps, mod) && (
-        <Buddy xstyle={styles.tip}>
-          Already know some {m.name}? Tap <b>Jump here</b> on any locked level to test out and skip
-          ahead.
-        </Buddy>
+        <div {...pending}>
+          <Buddy xstyle={styles.tip}>
+            Already know some {m.name}? Tap <b>Jump here</b> on any locked level to test out and
+            skip ahead.
+          </Buddy>
+        </div>
       )}
-      <div ref={mapRef} {...stylex.props(styles.map)}>
+      <div ref={mapRef} {...pending} {...stylex.props(styles.map)}>
         {levels.map((info, i) => (
           <CampSection
             key={i}
@@ -223,7 +224,7 @@ export function TrailMap({ mod, levels }: TrailMapProps) {
           />
         ))}
       </div>
-      <section aria-labelledby="summit-title" {...stylex.props(styles.summit)}>
+      <section aria-labelledby="summit-title" {...pending} {...stylex.props(styles.summit)}>
         <Icon name="flag" xstyle={styles.flag} />
         <h2 id="summit-title" {...stylex.props(text.display, text.h2)}>
           {complete ? 'Summit reached!' : 'The summit'}
@@ -248,9 +249,9 @@ export function TrailMap({ mod, levels }: TrailMapProps) {
 function useScrollToCurrent(
   mapRef: { current: HTMLElement | null },
   state: State,
+  ready: boolean,
   hasProgress: boolean,
 ) {
-  const ready = progressReady.value
   const scrolledRef = useRef(false)
   useEffect(() => {
     if (!ready || scrolledRef.current) return

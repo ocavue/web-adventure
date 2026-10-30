@@ -5,7 +5,8 @@ import { Icon } from '../../components/ui/Icon.tsx'
 import { ProgressBar } from '../../components/ui/ProgressBar.tsx'
 import { MODULES } from '../../lib/constants.ts'
 import type { ModuleInfo } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
+import type { ProgressState } from '../../lib/hooks.ts'
 import { modStats } from '../../lib/progress.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { focus, layout } from '../../styles/shared.ts'
@@ -51,6 +52,7 @@ const styles = stylex.create({
   info: { display: 'grid', gap: 6, minWidth: 0 },
   name: { fontFamily: fonts.display, fontWeight: 800, fontSize: 20, lineHeight: 1.1 },
   sub: { fontSize: 14, color: colors.ink2 },
+  progress: { display: 'grid', gap: 6 },
   foot: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -79,19 +81,29 @@ export interface TrailGridProps {
 
 /** The "Choose a trail" cards, one link per trail with the player's progress on it. */
 export function TrailGrid({ titles }: TrailGridProps) {
-  const state = useProgress()
+  const { state, pending } = useProgressState()
   return (
     <ul {...stylex.props(styles.grid)}>
       {MODULES.map((m) => (
         <li key={m.id} {...stylex.props(styles.item)}>
-          <TrailCard m={m} state={state} titles={titles[m.id]} />
+          <TrailCard m={m} state={state} pending={pending} titles={titles[m.id]} />
         </li>
       ))}
     </ul>
   )
 }
 
-function TrailCard({ m, state, titles }: { m: ModuleInfo; state: State; titles: string[] }) {
+function TrailCard({
+  m,
+  state,
+  pending,
+  titles,
+}: {
+  m: ModuleInfo
+  state: State
+  pending: ProgressState['pending']
+  titles: string[]
+}) {
   const st = modStats(m.id, state)
   return (
     <a href={`/trail/${m.id}`} {...stylex.props(moduleThemes[m.id], styles.card, focus.ring)}>
@@ -99,17 +111,19 @@ function TrailCard({ m, state, titles }: { m: ModuleInfo; state: State; titles: 
       <div {...stylex.props(styles.info)}>
         <h3 {...stylex.props(styles.name)}>{m.name}</h3>
         <p {...stylex.props(styles.sub)}>{m.tagline}</p>
-        <ProgressBar value={st.done / st.total} color={accent.color} />
-        <div {...stylex.props(styles.foot)}>
-          <span {...stylex.props(styles.nowrap)}>{trailStatus(m.id, titles, state)}</span>
-          {st.done > 0 ? (
-            <span {...stylex.props(styles.nowrap)}>
-              <Icon name="star" xstyle={styles.star} /> {st.stars}/{st.total * 3}
-              <span {...stylex.props(layout.srOnly)}> stars</span>
-            </span>
-          ) : (
-            <span {...stylex.props(styles.nowrap)}>{st.total} lessons</span>
-          )}
+        <div {...pending} {...stylex.props(styles.progress)}>
+          <ProgressBar value={st.done / st.total} color={accent.color} />
+          <div {...stylex.props(styles.foot)}>
+            <span {...stylex.props(styles.nowrap)}>{trailStatus(m.id, titles, state)}</span>
+            {st.done > 0 ? (
+              <span {...stylex.props(styles.nowrap)}>
+                <Icon name="star" xstyle={styles.star} /> {st.stars}/{st.total * 3}
+                <span {...stylex.props(layout.srOnly)}> stars</span>
+              </span>
+            ) : (
+              <span {...stylex.props(styles.nowrap)}>{st.total} lessons</span>
+            )}
+          </div>
         </div>
       </div>
     </a>

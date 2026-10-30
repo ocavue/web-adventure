@@ -96,8 +96,14 @@ const styles = stylex.create({
 
 const RING = 2 * Math.PI * 10
 
+export interface TopBarProps {
+  state: State
+  /** `false` while `state` is not the stored progress yet. Then the chips are pending. */
+  ready?: boolean
+}
+
 /** The sticky top bar: logo, streak, XP, daily goal, and links to progress and settings. */
-export function TopBar({ state }: { state: State }) {
+export function TopBar({ state, ready = true }: TopBarProps) {
   const streak = currentStreak(state)
   const dx = dailyXp(state)
   const pct = Math.min(1, dx / state.goal)
@@ -115,7 +121,7 @@ export function TopBar({ state }: { state: State }) {
           </svg>
           <span {...stylex.props(styles.word)}>Byte Trail</span>
         </a>
-        <div {...stylex.props(styles.chips)}>
+        <div data-pending={ready ? undefined : ''} {...stylex.props(styles.chips)}>
           <Chip
             icon="flame"
             iconXstyle={streak > 0 && styles.flameOn}

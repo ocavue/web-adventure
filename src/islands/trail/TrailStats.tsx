@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 
 import { ProgressBar } from '../../components/ui/ProgressBar.tsx'
 import { MOD } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
 import { modStats } from '../../lib/progress.ts'
 import type { ModuleId } from '../../lib/types.ts'
 import { text } from '../../styles/shared.ts'
@@ -16,9 +16,10 @@ const styles = stylex.create({
 
 /** Lessons done and stars earned on one trail. */
 export function TrailStats({ mod }: { mod: ModuleId }) {
-  const st = modStats(mod, useProgress())
+  const { state, pending } = useProgressState()
+  const st = modStats(mod, state)
   return (
-    <div {...stylex.props(styles.stats)}>
+    <div {...pending} {...stylex.props(styles.stats)}>
       <div {...stylex.props(styles.row, text.muted, text.small)}>
         <span>
           {st.done}/{st.total} lessons
