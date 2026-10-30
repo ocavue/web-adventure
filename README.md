@@ -32,4 +32,4 @@ Lessons are consecutive groups of 8 questions per level, in file order. Choices 
 
 ## Deployment
 
-Cloudflare Pages serves `dist/` from `master` as is, with no build step. Run `pnpm run build` and commit `dist/` together with source changes. CI fails when `dist/` is out of date, and autofix.ci rebuilds it on pull requests.
+Cloudflare Pages builds and deploys every push to `master`. It runs `pnpm run build` and serves `dist/`. The build settings live in the Cloudflare dashboard, and `.node-version` sets the Node.js version.

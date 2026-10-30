@@ -56,15 +56,6 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      # Cloudflare Pages serves the committed `dist/` from `master` without building it.
-      - name: Check that `dist/` is up to date
-        run: |
-          git add --intent-to-add dist
-          if ! git diff --exit-code --stat -- dist; then
-            echo '::error::`dist/` is out of date. Run `pnpm run build` and commit the result.'
-            exit 1
-          fi
-
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 15
