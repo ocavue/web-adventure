@@ -1,11 +1,9 @@
-import { effect } from '@preact/signals'
 import { useEffect } from 'preact/hooks'
 
 import { Announcer } from '../../components/ui/Announcer.tsx'
 import { Toaster } from '../../components/ui/Toaster.tsx'
 import { useProgress } from '../../lib/hooks.ts'
-import { progress, progressReady } from '../../lib/store.ts'
-import { applySettings } from '../../lib/theme.ts'
+import { useApplySettings } from '../../lib/theme.ts'
 import { showPendingToasts } from '../../lib/toast.ts'
 
 import { OnboardingDialog } from './OnboardingDialog.tsx'
@@ -17,12 +15,7 @@ export function AppShell() {
   const state = useProgress()
   // Badges earned in a lesson the player left early wait for the next page.
   useEffect(showPendingToasts, [])
-  // Runs after `useProgress` loads the stored state, so the theme from the head script is kept.
-  useEffect(() => {
-    return effect(() => {
-      if (progressReady.value) applySettings(progress.value.settings)
-    })
-  }, [])
+  useApplySettings()
   return (
     <>
       <TopBar state={state} />

@@ -51,8 +51,8 @@ function lessonCopy(r: LessonResult, m: ModuleInfo, s: State, levels: TrailLevel
   let mood: Mood = 'happy'
   if (r.campCleared) {
     const next = levels[m.id].at(r.campCleared)
-    title = `${CAMP_NAMES[r.campCleared]} reached!`
-    line = `Level ${r.campCleared} cleared. You climbed to ${fmt(ELEVATIONS[r.campCleared])} m and earned a 25 XP camp bonus.`
+    title = `Level ${r.campCleared} cleared!`
+    line = `You climbed to ${fmt(ELEVATIONS[r.campCleared])} m and earned a 25 XP camp bonus.`
     if (next) line += ` Next up: ${next.title}. ${next.blurb}`
     mood = 'wow'
   }

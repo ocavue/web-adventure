@@ -16,6 +16,7 @@ import { progress } from '../../lib/store.ts'
 import { reducedMotion } from '../../lib/theme.ts'
 import { toastAfterNavigation } from '../../lib/toast.ts'
 import type { Question } from '../../lib/types.ts'
+import { layout } from '../../styles/shared.ts'
 import { moduleThemes } from '../../styles/themes.ts'
 import { colors, fonts, radii } from '../../styles/tokens.stylex.ts'
 
@@ -111,6 +112,7 @@ const styles = stylex.create({
     fontWeight: 700,
     fontSize: 'clamp(20px, 3.2vw, 25px)',
     lineHeight: 1.3,
+    letterSpacing: '-0.01em',
     textWrap: 'pretty',
     outline: 'none',
   },
@@ -269,8 +271,10 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
     return () => document.removeEventListener('keydown', onKey)
   })
 
-  // A new question: focus its prompt, or the input of a fill question.
+  // A new question: focus its prompt, or the input of a fill question. A restored answered
+  // question keeps the focus on Continue, which the dock takes.
   useEffect(() => {
+    if (session.state.peek().answered) return
     if (session.current.peek()?.question.type === 'fill') {
       const timer = setTimeout(() => document.getElementById('fill')?.focus(), 50)
       return () => clearTimeout(timer)
@@ -328,11 +332,11 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
         <span
           key={st.results.length}
           title="Correct in a row"
-          aria-label={`${combo} correct in a row`}
           {...stylex.props(styles.combo, combo < 2 && styles.cold, popNow && styles.pop)}
         >
           <Icon name="flame" xstyle={styles.comboIcon} />
           {combo}
+          <span {...stylex.props(layout.srOnly)}> correct in a row</span>
         </span>
       </div>
       <main
@@ -370,6 +374,7 @@ export function Lesson({ session, onFinish, onLeave }: LessonProps) {
         {q.codeHtml && (
           <pre
             tabIndex={0}
+            role="region"
             aria-label="Code example"
             // `shiki` turns on the theme colors in `global.css`.
             class={`shiki ${stylex.props(styles.code).className ?? ''}`}
