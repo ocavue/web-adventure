@@ -1,12 +1,37 @@
 ---
 import * as stylex from '@stylexjs/stylex'
 
+import { HomeHero } from '../islands/home/HomeHero.tsx'
+import { TrailGrid } from '../islands/home/TrailGrid.tsx'
 import Base from '../layouts/Base.astro'
+import { trailSummaries } from '../lib/bank.server.ts'
+import { LEVELS, MODULES } from '../lib/constants.ts'
+import { websiteJsonLd } from '../lib/seo.ts'
+import type { ModuleId } from '../lib/types.ts'
+import { fmt } from '../lib/utils.ts'
 import { layout, text } from '../styles/shared.ts'
+
+import { styles } from './_index.styles.ts'
+
+const summaries = trailSummaries()
+const titles = Object.fromEntries(
+  summaries.map((s) => [s.mod, s.levels.map((level) => level.title)]),
+) as Record<ModuleId, string[]>
+const questions = summaries.reduce((n, s) => n + s.questionCount, 0)
+const description = `Learn web dev one small step at a time: ${MODULES.length} free trails, ${fmt(questions)} short quiz questions on HTML, CSS, JavaScript, TypeScript, React, Git, and the web.`
 ---
 
-<Base title="Byte Trail" description="Learn web dev one small step at a time.">
+<Base title="Byte Trail" description={description} jsonLd={websiteJsonLd()}>
   <main {...stylex.attrs(layout.wrap)}>
-    <h1 {...stylex.attrs(text.display, text.h1)}>Byte Trail</h1>
+    <HomeHero client:load titles={titles} />
+    <section aria-labelledby="trails-title">
+      <div {...stylex.attrs(styles.head)}>
+        <h2 id="trails-title" {...stylex.attrs(text.display, text.h2)}>Choose a trail</h2>
+        <span {...stylex.attrs(text.muted, text.small)}>
+          {MODULES.length} trails, {fmt(questions)} questions, {LEVELS} camps each
+        </span>
+      </div>
+      <TrailGrid client:load titles={titles} />
+    </section>
   </main>
 </Base>
