@@ -56,7 +56,6 @@ export function Blaze({ glyph, size = 'normal', mod, xstyle }: BlazeProps) {
   return (
     <span
       aria-hidden="true"
-      data-blaze=""
       {...stylex.props(
         mod && moduleThemes[mod],
         styles.blaze,
