@@ -64,10 +64,6 @@
     }
   }
 
-  @view-transition {
-    navigation: auto;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -84,5 +80,38 @@
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+  }
+
+  /* `*` does not match the view transition pseudo-elements. */
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+
+  :root[data-calm]::view-transition-group(*),
+  :root[data-calm]::view-transition-old(*),
+  :root[data-calm]::view-transition-new(*) {
+    animation: none !important;
+  }
+
+  /*
+   * The inline script in `Base.astro` sets `data-returning` before the first paint when progress is
+   * stored. Islands mark progress-dependent elements with `data-pending` until the stored progress
+   * shows (`useProgressState()`), so a returning player never sees the new-player content. It lives
+   * here because StyleX cannot select on an `<html>` attribute. Hidden, not removed, so nothing
+   * shifts. If an island never hydrates, the content shows after 3 seconds anyway.
+   */
+  :root[data-returning] [data-pending] {
+    visibility: hidden;
+    animation: pending-reveal 0s 3s forwards;
+  }
+
+  @keyframes pending-reveal {
+    to {
+      visibility: visible;
+    }
   }
 }

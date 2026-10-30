@@ -3,8 +3,8 @@ import { useEffect } from 'preact/hooks'
 
 import { Announcer } from '../../components/ui/Announcer.tsx'
 import { Toaster } from '../../components/ui/Toaster.tsx'
-import { useProgress } from '../../lib/hooks.ts'
-import { progress, progressReady } from '../../lib/store.ts'
+import { useProgressState } from '../../lib/hooks.ts'
+import { progress } from '../../lib/store.ts'
 import { applySettings } from '../../lib/theme.ts'
 import { showPendingToasts } from '../../lib/toast.ts'
 
@@ -14,20 +14,18 @@ import { TopBar } from './TopBar.tsx'
 
 /** The app shell on every page but the lesson: top bar, settings, onboarding, toasts, announcer. */
 export function AppShell() {
-  const state = useProgress()
+  const { state, ready } = useProgressState()
   // Badges earned in a lesson the player left early wait for the next page.
   useEffect(showPendingToasts, [])
-  // Runs after `useProgress` loads the stored state, so the theme from the head script is kept.
+  // Runs after `useProgressState` loads the stored state, so the theme from the head script is kept.
   useEffect(() => {
-    return effect(() => {
-      if (progressReady.value) applySettings(progress.value.settings)
-    })
+    return effect(() => applySettings(progress.value.settings))
   }, [])
   return (
     <>
-      <TopBar state={state} />
+      <TopBar state={state} ready={ready} />
       <SettingsDialog />
-      <OnboardingDialog />
+      <OnboardingDialog state={state} ready={ready} />
       <Toaster />
       <Announcer />
     </>

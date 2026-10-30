@@ -21,13 +21,15 @@ export interface TrailSummary {
   mod: ModuleId
   levels: LevelInfo[]
   questionCount: number
+  questionIds: string[]
 }
 
-/** Level titles and question counts for every trail, small enough to pass to islands as props. */
+/** Level titles and question ids for every trail, from the banks at build time. */
 export function trailSummaries(): TrailSummary[] {
   return MODULES.map((m) => {
     const bank = readBank(m.id)
-    return { mod: m.id, levels: bank.levels, questionCount: bank.questions.length }
+    const questionIds = bank.questions.map((q) => q.id)
+    return { mod: m.id, levels: bank.levels, questionCount: questionIds.length, questionIds }
   })
 }
 

@@ -7,8 +7,8 @@ import { Button } from '../../components/ui/Button.tsx'
 import { Dialog, DialogActions } from '../../components/ui/Dialog.tsx'
 import { SegmentedControl } from '../../components/ui/SegmentedControl.tsx'
 import { MODULES } from '../../lib/constants.ts'
-import { progress, progressReady, updateProgress } from '../../lib/store.ts'
-import type { ModuleId } from '../../lib/types.ts'
+import { updateProgress } from '../../lib/store.ts'
+import type { ModuleId, State } from '../../lib/types.ts'
 import { focus, text } from '../../styles/shared.ts'
 import { moduleThemes } from '../../styles/themes.ts'
 import { accent, colors } from '../../styles/tokens.stylex.ts'
@@ -160,11 +160,11 @@ function OnboardingForm({ titleId }: { titleId: string }) {
 }
 
 /** The welcome dialog for a new player. It cannot be dismissed: both buttons finish it. */
-export function OnboardingDialog() {
+export function OnboardingDialog({ state, ready }: { state: State; ready: boolean }) {
   const titleId = useId()
   return (
     <Dialog
-      open={progressReady.value && !progress.value.onboarded}
+      open={ready && !state.onboarded}
       onClose={() => {}}
       dismissible={false}
       labelledBy={titleId}

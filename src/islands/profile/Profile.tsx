@@ -11,10 +11,9 @@ import { ProgressBar } from '../../components/ui/ProgressBar.tsx'
 import { Tag } from '../../components/ui/Tag.tsx'
 import { banks, loadBank } from '../../lib/bank.ts'
 import { BADGES, MOD, MODULES } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
 import { currentStreak, modComplete, modStats, rankOf } from '../../lib/progress.ts'
 import { playHref } from '../../lib/selection.ts'
-import { progressReady } from '../../lib/store.ts'
 import type { ModuleId } from '../../lib/types.ts'
 import { openSettings } from '../../lib/ui-state.ts'
 import { fmt } from '../../lib/utils.ts'
@@ -140,8 +139,7 @@ function SectionHead({
 
 /** The player's profile: weekly XP, stats, trail progress, topics to grow, badges, and certificates. */
 export function Profile() {
-  const state = useProgress()
-  const ready = progressReady.value
+  const { state, ready, pending } = useProgressState()
   const rank = rankOf(state.xp)
   const { answered, correct } = state.stats
   const accuracy = answered ? Math.round((correct / answered) * 100) : 0
@@ -167,7 +165,7 @@ export function Profile() {
     <>
       <div {...stylex.props(styles.head)}>
         <IconButton href="/" icon="back" label="Back home" />
-        <div {...stylex.props(styles.title)}>
+        <div {...pending} {...stylex.props(styles.title)}>
           <div {...stylex.props(text.eyebrow)}>{rank.name}</div>
           <h1 {...stylex.props(text.display, text.h1, styles.name)}>{state.name || 'Hiker'}</h1>
         </div>
@@ -176,7 +174,7 @@ export function Profile() {
         </Button>
       </div>
 
-      <div {...stylex.props(styles.grid)}>
+      <div {...pending} {...stylex.props(styles.grid)}>
         <Panel as="section" labelledBy="week-title">
           <h2 id="week-title" {...stylex.props(text.eyebrow)}>
             This week
@@ -263,12 +261,12 @@ export function Profile() {
 
       <section aria-labelledby="badges-title">
         <SectionHead id="badges-title" title="Badges">
-          <span {...stylex.props(text.muted)}>
+          <span {...pending} {...stylex.props(text.muted)}>
             {got} of {BADGES.length}
           </span>
         </SectionHead>
         <Panel>
-          <ul {...stylex.props(styles.badges)}>
+          <ul {...pending} {...stylex.props(styles.badges)}>
             {badges.map((b) => (
               <li key={b.id}>
                 <Badge badge={b} got={earned(b.id)} />

@@ -6,9 +6,8 @@ import { Blaze } from '../../components/ui/Blaze.tsx'
 import { Button } from '../../components/ui/Button.tsx'
 import { Stars } from '../../components/ui/Stars.tsx'
 import { MOD } from '../../lib/constants.ts'
-import { useProgress } from '../../lib/hooks.ts'
+import { useProgressState } from '../../lib/hooks.ts'
 import { modComplete, modStats } from '../../lib/progress.ts'
-import { progressReady } from '../../lib/store.ts'
 import { toast } from '../../lib/toast.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { text } from '../../styles/shared.ts'
@@ -94,13 +93,13 @@ export interface CertificateProps {
 
 /** The certificate for a finished trail, or a friendly nudge when the trail is not finished yet. */
 export function Certificate({ mod, questionCount }: CertificateProps) {
-  const state = useProgress()
+  const { state, ready, pending } = useProgressState()
   const shareRef = useRef<HTMLParagraphElement>(null)
   const m = MOD[mod]
 
-  if (!progressReady.value) {
+  if (!ready) {
     return (
-      <div {...stylex.props(styles.page, styles.loading)}>
+      <div {...pending} {...stylex.props(styles.page, styles.loading)}>
         <p {...stylex.props(text.muted)}>Checking your trail…</p>
       </div>
     )
