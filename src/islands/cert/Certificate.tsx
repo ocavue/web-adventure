@@ -12,7 +12,7 @@ import { progressReady } from '../../lib/store.ts'
 import { toast } from '../../lib/toast.ts'
 import type { ModuleId, State } from '../../lib/types.ts'
 import { text } from '../../styles/shared.ts'
-import { accent, colors, fonts, radii } from '../../styles/tokens.stylex.ts'
+import { accent, colors, fonts, printColors, radii } from '../../styles/tokens.stylex.ts'
 
 const PRINT = '@media print'
 
@@ -35,17 +35,21 @@ const styles = stylex.create({
     alignContent: { default: null, [PRINT]: 'center' },
     paddingInline: { default: null, [PRINT]: 24 },
     maxWidth: { default: 620, [PRINT]: 'none' },
-    backgroundColor: { default: null, [PRINT]: colors.paper2 },
+    backgroundColor: { default: null, [PRINT]: printColors.paper },
+    color: { default: null, [PRINT]: printColors.ink },
     printColorAdjust: 'exact',
   },
   card: {
     width: '100%',
     maxWidth: { default: null, [PRINT]: 620 },
-    backgroundColor: colors.paper2,
+    backgroundColor: { default: colors.paper2, [PRINT]: printColors.paper },
     borderRadius: radii.l,
     paddingBlock: 28,
     paddingInline: 22,
-    boxShadow: `inset 0 0 0 2px ${accent.color}, inset 0 0 0 8px ${colors.paper2}, inset 0 0 0 9.5px color-mix(in srgb, ${accent.color} 45%, ${colors.line})`,
+    boxShadow: {
+      default: `inset 0 0 0 2px ${accent.color}, inset 0 0 0 8px ${colors.paper2}, inset 0 0 0 9.5px color-mix(in srgb, ${accent.color} 45%, ${colors.line})`,
+      [PRINT]: `inset 0 0 0 2px ${accent.color}, inset 0 0 0 8px ${printColors.paper}, inset 0 0 0 9.5px color-mix(in srgb, ${accent.color} 45%, ${printColors.paper})`,
+    },
     display: 'grid',
     gap: 12,
     justifyItems: 'center',
@@ -57,9 +61,10 @@ const styles = stylex.create({
     fontFamily: fonts.display,
     fontWeight: 800,
     fontSize: 30,
-    lineHeight: 1.2,
+    lineHeight: 1.5,
     overflowWrap: 'anywhere',
   },
+  printMuted: { color: { default: null, [PRINT]: printColors.ink2 } },
   buddy: { textAlign: 'start' },
   actions: {
     display: 'flex',
@@ -149,8 +154,8 @@ export function Certificate({ mod, questionCount }: CertificateProps) {
     <div {...stylex.props(styles.page, styles.printPage)}>
       <article {...stylex.props(styles.card)} aria-label={`${m.name} certificate`}>
         <Blaze glyph={m.glyph} mod={mod} />
-        <p {...stylex.props(text.eyebrow)}>Certificate of completion</p>
-        <p {...stylex.props(text.muted)}>This certifies that</p>
+        <p {...stylex.props(text.eyebrow, styles.printMuted)}>Certificate of completion</p>
+        <p {...stylex.props(text.muted, styles.printMuted)}>This certifies that</p>
         <p {...stylex.props(styles.who)}>{state.name || 'A determined hiker'}</p>
         <p>
           reached the summit of the <b>{m.name}</b> trail on Byte Trail,
@@ -158,7 +163,7 @@ export function Certificate({ mod, questionCount }: CertificateProps) {
           answering {questionCount} questions across 5 levels.
         </p>
         <Stars count={3} />
-        <p {...stylex.props(text.mono, text.muted, text.tiny)}>
+        <p {...stylex.props(text.mono, text.muted, text.tiny, styles.printMuted)}>
           {st.stars} / {maxStars} stars · {date}
         </p>
       </article>
