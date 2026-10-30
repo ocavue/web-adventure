@@ -10,3 +10,4 @@ minimumReleaseAgeExclude:
 allowBuilds:
   esbuild: false
   simple-git-hooks: false
+  workerd: false
