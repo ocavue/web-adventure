@@ -56,6 +56,8 @@ const styles = stylex.create({
   headLocked: { opacity: 0.85 },
   headText: { flex: '1', minWidth: 180 },
   elev: { fontFamily: fonts.mono, fontSize: 12, color: colors.ink3 },
+  // The locked head is faded, so its small text needs the darker ink to keep 4.5:1.
+  elevLocked: { color: colors.ink2 },
   path: { position: 'relative' },
   nodes: {
     listStyle: 'none',
@@ -164,7 +166,8 @@ const styles = stylex.create({
     gap: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    color: colors.ink3,
+    // `ink3` falls below 4.5:1 where a contour line crosses the note.
+    color: colors.ink2,
     fontSize: 14,
     paddingTop: 16,
     paddingBottom: 4,
@@ -284,7 +287,7 @@ function CampSection({
       <div {...stylex.props(styles.head, !camp.unlocked && styles.headLocked)}>
         <Blaze glyph={String(l)} size="sm" mod={mod} />
         <div {...stylex.props(styles.headText)}>
-          <p {...stylex.props(styles.elev)}>
+          <p {...stylex.props(styles.elev, !camp.unlocked && styles.elevLocked)}>
             {CAMP_NAMES[l - 1]} · {fmt(ELEVATIONS[l - 1])} m
           </p>
           <h2 id={titleId} {...stylex.props(text.display, text.h3)}>

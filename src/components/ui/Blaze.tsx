@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex'
 
 import type { ModuleId } from '../../lib/types.ts'
 import { moduleThemes } from '../../styles/themes.ts'
-import { accent, colors, fonts } from '../../styles/tokens.stylex.ts'
+import { accent, fonts } from '../../styles/tokens.stylex.ts'
 
 const styles = stylex.create({
   blaze: {
@@ -10,7 +10,7 @@ const styles = stylex.create({
     height: 64,
     borderRadius: 9,
     backgroundColor: accent.color,
-    color: '#fff',
+    color: accent.ink,
     display: 'grid',
     placeItems: 'center',
     flexShrink: 0,
@@ -19,7 +19,7 @@ const styles = stylex.create({
     fontSize: 15,
     position: 'relative',
     boxShadow: 'inset 0 -5px 0 rgba(0, 0, 0, 0.14)',
-    textShadow: '0 1px 0 rgba(0, 0, 0, 0.25)',
+    textShadow: accent.inkShadow,
     '::after': {
       content: "''",
       position: 'absolute',
@@ -38,7 +38,6 @@ const styles = stylex.create({
     '::after': { inset: 3 },
   },
   xs: { width: 30, height: 34, fontSize: 10 },
-  darkInk: { color: colors.blazeInk, textShadow: 'none' },
 })
 
 export interface BlazeProps {
@@ -46,8 +45,7 @@ export interface BlazeProps {
   glyph: string
   size?: 'normal' | 'sm' | 'xs'
   /**
-   * Paints the marker in this trail's color. Without it the marker uses the inherited `accent.color`.
-   * Pass it for the light trails (`js`, `web`) so the glyph switches to dark ink.
+   * Paints the marker in this trail's color. Without it the marker uses the inherited `accent`.
    */
   mod?: ModuleId
   xstyle?: stylex.StyleXStyles
@@ -63,7 +61,6 @@ export function Blaze({ glyph, size = 'normal', mod, xstyle }: BlazeProps) {
         styles.blaze,
         size !== 'normal' && styles.sm,
         size === 'xs' && styles.xs,
-        (mod === 'js' || mod === 'web') && styles.darkInk,
         xstyle,
       )}
     >
