@@ -1,10 +1,12 @@
 ---
-import { Counter } from '../components/Counter.tsx'
-import { Buddy } from '../components/ui/Bit.tsx'
+import * as stylex from '@stylexjs/stylex'
+
 import Base from '../layouts/Base.astro'
+import { layout, text } from '../styles/shared.ts'
 ---
 
 <Base title="Byte Trail" description="Learn web dev one small step at a time.">
-  <Buddy>Hello from a static Buddy</Buddy>
-  <Counter client:load label="Count" />
+  <main {...stylex.attrs(layout.wrap)}>
+    <h1 {...stylex.attrs(text.display, text.h1)}>Byte Trail</h1>
+  </main>
 </Base>
