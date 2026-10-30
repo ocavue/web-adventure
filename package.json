@@ -1,0 +1,47 @@
+{
+  "name": "web-adventure",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@12.14.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "pnpm run lint:eslint && pnpm run lint:oxfmt && pnpm run lint:knip",
+    "lint:eslint": "eslint --cache --max-warnings 0",
+    "lint:oxfmt": "oxfmt --check",
+    "lint:knip": "knip",
+    "fix": "pnpm run fix:oxfmt && pnpm run fix:eslint",
+    "fix:oxfmt": "oxfmt",
+    "fix:eslint": "eslint --cache --max-warnings 0 --fix",
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:install": "playwright install chromium --no-shell",
+    "typecheck": "tsc -b",
+    "postinstall": "simple-git-hooks"
+  },
+  "dependencies": {
+    "prismjs": "^1.30.0"
+  },
+  "devDependencies": {
+    "@ocavue/eslint-config": "^4.20.2",
+    "@ocavue/tsconfig": "^0.7.1",
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^24.0.0",
+    "@types/prismjs": "^1.26.5",
+    "eslint": "^10.12.0",
+    "knip": "^6.36.0",
+    "nano-staged": "^1.0.2",
+    "oxfmt": "^0.71.0",
+    "simple-git-hooks": "^2.14.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.3"
+  },
+  "nano-staged": {
+    "*": "oxfmt --no-error-on-unmatched-pattern"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "./node_modules/.bin/nano-staged --allow-empty -u"
+  }
+}

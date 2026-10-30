@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "singleQuote": true,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "pnpm-lock.yaml",
+    ".DS_Store",
+    "*.log",
+    "coverage",
+    "dist",
+    "node_modules",
+    "playwright-report",
+    "test-results",
+    "*.tsbuildinfo"
+  ]
+}

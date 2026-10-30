@@ -1,0 +1,12 @@
+strictPeerDependencies: true
+
+trustPolicy: no-downgrade
+
+trustPolicyIgnoreAfter: 10080 # 7 days
+
+minimumReleaseAgeExclude:
+  - '@ocavue/*'
+
+allowBuilds:
+  esbuild: false
+  simple-git-hooks: false
