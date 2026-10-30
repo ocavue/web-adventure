@@ -1,0 +1,49 @@
+---
+import * as stylex from '@stylexjs/stylex'
+import type { GetStaticPaths } from 'astro'
+
+import { Blaze } from '../../components/ui/Blaze.tsx'
+import { IconButton } from '../../components/ui/IconButton.tsx'
+import { TrailMap } from '../../islands/trail/TrailMap.tsx'
+import { TrailStats } from '../../islands/trail/TrailStats.tsx'
+import Base from '../../layouts/Base.astro'
+import { trailSummaries } from '../../lib/bank.server.ts'
+import type { TrailSummary } from '../../lib/bank.server.ts'
+import { MOD } from '../../lib/constants.ts'
+import { TRAIL_DESCRIPTIONS, trailJsonLd } from '../../lib/seo.ts'
+import { layout, text } from '../../styles/shared.ts'
+
+import { styles } from './_trail.styles.ts'
+
+export const getStaticPaths = (() => {
+  return trailSummaries().map((summary) => ({ params: { mod: summary.mod }, props: { summary } }))
+}) satisfies GetStaticPaths
+
+interface Props {
+  summary: TrailSummary
+}
+
+const { summary } = Astro.props
+const mod = summary.mod
+const m = MOD[mod]
+---
+
+<Base
+  title={`${m.name} trail`}
+  description={TRAIL_DESCRIPTIONS[mod]}
+  mod={mod}
+  jsonLd={trailJsonLd(mod, summary)}
+>
+  <main {...stylex.attrs(layout.wrap)}>
+    <header {...stylex.attrs(styles.head)}>
+      <IconButton icon="back" label="Back to all trails" href="/" />
+      <Blaze glyph={m.glyph} mod={mod} />
+      <div {...stylex.attrs(styles.title)}>
+        <p {...stylex.attrs(text.eyebrow)}>Trail</p>
+        <h1 {...stylex.attrs(text.display, text.h1, styles.name)}>{m.name}</h1>
+      </div>
+      <TrailStats client:load mod={mod} />
+    </header>
+    <TrailMap client:load mod={mod} levels={summary.levels} />
+  </main>
+</Base>
