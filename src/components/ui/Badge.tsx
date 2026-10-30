@@ -1,8 +1,23 @@
 import * as stylex from '@stylexjs/stylex'
 
-import type { Badge as BadgeInfo } from '../../lib/constants.ts'
+import type { Badge as BadgeInfo, BadgeColor } from '../../lib/constants.ts'
 import { layout } from '../../styles/shared.ts'
 import { colors } from '../../styles/tokens.stylex.ts'
+
+const BADGE_COLORS: Record<BadgeColor, string> = {
+  html: colors.html,
+  css: colors.css,
+  js: colors.js,
+  ts: colors.ts,
+  web: colors.web,
+  react: colors.react,
+  git: colors.git,
+  blaze: colors.blaze,
+  flame: colors.flame,
+  ember: '#e8590c',
+  amber: '#f59f00',
+  red: '#e03131',
+}
 
 import type { IconName } from './icons.ts'
 import { Medal } from './Medal.tsx'
@@ -31,7 +46,7 @@ export interface BadgeProps {
 export function Badge({ badge, got, xstyle }: BadgeProps) {
   return (
     <div {...stylex.props(styles.badge, xstyle)}>
-      <Medal icon={badge.icon as IconName} color={got ? badge.color : undefined} />
+      <Medal icon={badge.icon as IconName} color={got ? BADGE_COLORS[badge.color] : undefined} />
       <div {...stylex.props(styles.name)}>
         {badge.name}
         {!got && <span {...stylex.props(layout.srOnly)}> (locked)</span>}

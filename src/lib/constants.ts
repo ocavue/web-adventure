@@ -39,12 +39,15 @@ export const RANKS: [number, string][] = [
   [6500, 'Trail Legend'],
 ]
 
+export type BadgeColor = ModuleId | 'blaze' | 'flame' | 'ember' | 'amber' | 'red'
+
 export interface Badge {
   id: string
   name: string
   desc: string
   icon: string
-  color: string
+  /** A color name that `Badge` maps to a design token. */
+  color: BadgeColor
 }
 
 export const BADGES: Badge[] = [
@@ -53,134 +56,134 @@ export const BADGES: Badge[] = [
     name: 'First Steps',
     desc: 'Finish your first lesson',
     icon: 'boot',
-    color: 'var(--m-web)',
+    color: 'web',
   },
   {
     id: 'perfect',
     name: 'Flawless',
     desc: 'Earn 3 stars on a lesson',
     icon: 'star',
-    color: 'var(--blaze)',
+    color: 'blaze',
   },
-  { id: 'combo5', name: 'On a Roll', desc: '5 correct in a row', icon: 'flame', color: '#f76707' },
+  { id: 'combo5', name: 'On a Roll', desc: '5 correct in a row', icon: 'flame', color: 'flame' },
   {
     id: 'combo12',
     name: 'Unstoppable',
     desc: '12 correct in a row',
     icon: 'bolt',
-    color: '#e8590c',
+    color: 'ember',
   },
   {
     id: 'comeback',
     name: 'Comeback',
     desc: 'Fix a missed question in the same lesson',
     icon: 'undo',
-    color: 'var(--m-ts)',
+    color: 'ts',
   },
   {
     id: 'nohint',
     name: 'Solo Hiker',
     desc: 'Finish a lesson without hints (from lesson 3 on)',
     icon: 'compass',
-    color: 'var(--m-css)',
+    color: 'css',
   },
   {
     id: 'speedy',
     name: 'Trail Runner',
     desc: 'Finish 3 lessons in one day',
     icon: 'clock',
-    color: 'var(--m-react)',
+    color: 'react',
   },
   {
     id: 'daily',
     name: 'Daily Dose',
     desc: 'Complete a daily challenge',
     icon: 'sun',
-    color: 'var(--blaze)',
+    color: 'blaze',
   },
   {
     id: 'streak3',
     name: 'Warming Up',
     desc: 'Reach a 3-day streak',
     icon: 'flame',
-    color: '#f59f00',
+    color: 'amber',
   },
   {
     id: 'streak7',
     name: 'Week Warrior',
     desc: 'Reach a 7-day streak',
     icon: 'flame',
-    color: '#e03131',
+    color: 'red',
   },
   {
     id: 'explorer',
     name: 'Explorer',
     desc: 'Try 4 different trails',
     icon: 'map',
-    color: 'var(--m-web)',
+    color: 'web',
   },
   {
     id: 'jumper',
     name: 'Fast Track',
     desc: 'Pass a jump-ahead test',
     icon: 'rocket',
-    color: 'var(--m-git)',
+    color: 'git',
   },
   {
     id: 'reviewer',
     name: 'Patch Notes',
     desc: 'Clear 10 questions in Review',
     icon: 'wrench',
-    color: 'var(--m-ts)',
+    color: 'ts',
   },
   {
     id: 'q100',
     name: 'Century',
     desc: 'Answer 100 questions',
     icon: 'hundred',
-    color: 'var(--m-html)',
+    color: 'html',
   },
   {
     id: 'q500',
     name: 'Marathon',
     desc: 'Answer 500 questions',
     icon: 'mountain',
-    color: 'var(--m-react)',
+    color: 'react',
   },
   {
     id: 'camp',
     name: 'Camp Cleared',
     desc: 'Finish every lesson in a level',
     icon: 'tent',
-    color: 'var(--m-css)',
+    color: 'css',
   },
   {
     id: 'summit',
     name: 'First Summit',
     desc: 'Finish a whole trail',
     icon: 'flag',
-    color: 'var(--m-html)',
+    color: 'html',
   },
   {
     id: 'allsummits',
     name: 'Mountaineer',
     desc: 'Finish all seven trails',
     icon: 'crown',
-    color: 'var(--blaze)',
+    color: 'blaze',
   },
   {
     id: 'owl',
     name: 'Night Owl',
     desc: 'Finish a lesson after 10 pm (from lesson 3 on)',
     icon: 'moon',
-    color: 'var(--m-ts)',
+    color: 'ts',
   },
   {
     id: 'lark',
     name: 'Early Bird',
     desc: 'Finish a lesson before 8 am (from lesson 3 on)',
     icon: 'sun',
-    color: '#f59f00',
+    color: 'amber',
   },
 ]
 export const PRAISE = [
